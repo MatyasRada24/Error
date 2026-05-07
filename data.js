@@ -3660,98 +3660,59 @@ const errorCodes = [
         }
     },
     {
-        id: "win-inaccessible-boot", type: "software", subcategory: "windows",
-        vendors: ["win10", "win11"],
-        code: "INACCESSIBLE_BOOT_DEVICE",
-        category: { cs: "Windows OS", en: "Windows OS", zh: "Windows 操作系统" },
+        id: "lap-touchpad-err", type: "hardware", subcategory: "mb",
+        code: "Laptop Touchpad Not Responding / I2C HID Error",
+        category: { cs: "Základní deska", en: "Motherboard", zh: "主板" },
         description: {
-            cs: "BSOD při startu systému. Windows ztratil přístup k systémovému oddílu disku.",
-            en: "BSOD at system startup. Windows lost access to the system disk partition.",
-            zh: "系统启动时蓝屏。Windows 失去了对系统磁盘分区的访问权限。"
+            cs: "Touchpad notebooku náhodně přestává fungovat nebo se kurzor pohybuje trhaně – chyba I2C sběrnice.",
+            en: "Laptop touchpad randomly stops working or cursor jumps – I2C bus error.",
+            zh: "笔记本电脑触摸板随机停止工作或光标跳动——I2C 总线错误。"
         },
         solution: {
-            cs: `<ol class="sol-steps">
-<li><strong>Zkontrolujte nastavení SATA v BIOSu:</strong> Restartujte do BIOSu → Storage / SATA Configuration → zkontrolujte, zda je nastaveno AHCI (nebo RAID pokud jste to měli). Pokud jste nedávno změnili tento parametr, vraťte ho zpět.</li>
-<li><strong>Spusťte Windows Recovery Environment (WinRE):</strong> Na přihlašovací obrazovce klikněte na tlačítko napájení → Restartovat se stisknutou klávesou <kbd>Shift</kbd>. Nebo spusťte PC z instalačního USB Windows → Opravit počítač.</li>
-<li><strong>Odinstalujte problematické aktualizace přes WinRE:</strong> V WinRE → Odstraňování problémů → Pokročilé možnosti → Odinstalovat aktualizace → vyberte poslední aktualizaci kvality nebo ovladačů a odinstalujte ji.</li>
-<li><strong>Spusťte Startup Repair:</strong> V WinRE → Odstraňování problémů → Pokročilé možnosti → Oprava při spuštění. Windows automaticky prohledá a opraví konfiguraci bootloaderu (BCD).</li>
-<li><strong>Pokud jste migrovali OS na jiný disk:</strong> Ujistěte se, že BIOS bootuje ze správného disku. Spusťte <code>bootrec /fixmbr</code> a <code>bootrec /rebuildbcd</code> v CMD z WinRE pro opravu boot záznamu.</li>
-</ol>`,
-            en: `<ol class="sol-steps">
-<li><strong>Check SATA configuration in BIOS:</strong> Restart into BIOS → Storage / SATA Configuration → verify the mode is set to AHCI (or RAID if that's what you had). If you recently changed this setting, revert it.</li>
-<li><strong>Launch Windows Recovery Environment (WinRE):</strong> On the login screen, click the power button → hold <kbd>Shift</kbd> + Restart. Or boot from a Windows USB installation media → Repair your computer.</li>
-<li><strong>Uninstall problematic updates via WinRE:</strong> In WinRE → Troubleshoot → Advanced options → Uninstall Updates → select the most recent quality or driver update and remove it.</li>
-<li><strong>Run Startup Repair:</strong> In WinRE → Troubleshoot → Advanced options → Startup Repair. Windows will automatically scan and fix the bootloader configuration (BCD).</li>
-<li><strong>If you migrated the OS to a new drive:</strong> Make sure the BIOS is booting from the correct disk. Run <code>bootrec /fixmbr</code> and <code>bootrec /rebuildbcd</code> in CMD from WinRE to repair the boot record.</li>
-</ol>`,
-            zh: `<ol class="sol-steps">
-<li><strong>检查 BIOS 中的 SATA 配置：</strong>重启进入 BIOS → 存储/SATA 配置 → 确认模式设置为 AHCI（或如果您之前是 RAID 则选 RAID）。如果您最近更改了此设置，请将其恢复。</li>
-<li><strong>启动 Windows 恢复环境 (WinRE)：</strong>在登录屏幕上，点击电源按钮 → 按住 <kbd>Shift</kbd> + 重启。或者从 Windows USB 安装介质启动 → 修复计算机。</li>
-<li><strong>通过 WinRE 卸载有问题的更新：</strong>在 WinRE → 疑难解答 → 高级选项 → 卸载更新 → 选择最近的质量更新或驱动更新并将其删除。</li>
-<li><strong>运行启动修复：</strong>在 WinRE → 疑难解答 → 高级选项 → 启动修复。Windows 将自动扫描并修复引导加载程序配置 (BCD)。</li>
-<li><strong>如果您将 OS 迁移到新驱动器：</strong>确保 BIOS 从正确的磁盘启动。在 WinRE 的 CMD 中运行 <code>bootrec /fixmbr</code> 和 <code>bootrec /rebuildbcd</code> 来修复启动记录。</li>
-</ol>`
+            cs: "Aktualizujte Serial I/O ovladač. Vypněte 'Allow computer to turn off this device' v Device Manager. Zkontrolujte flex kabel.",
+            en: "Update Serial I/O driver. Disable 'Allow computer to turn off this device' in Device Manager. Check internal flex cable.",
+            zh: "更新 Serial I/O 驱动程序，在设备管理器中禁用'允许计算机关闭此设备'，检查内部排线。"
         },
         details: {
-            cs: "Tento kód na modré obrazovce (0x0000007B) nastává, když init proces načte jádro operačního systému do paměti, ale následně jádro nemá nezbytné ovladače úložiště k pokračování ve čtení z bootovacího disku. Nejčastější příčiny tvoří: (1) Změna SATA Configuration z AHCI na RAID/IDE v BIOS/UEFI. (2) Chybný storage driver (např. Intel RST) aktualizovaný z Windows Update, který na daný řadič nepasuje. (3) Migrace OS na jiný disk nebo výměna základní desky bez instalace klíčových ovladačů. Řešení: Opětovné navrácení nastavení řadiče do původního stavu v BIOSu, vstup do Nouzového režimu a ruční reinstalace odinstalovaných storage driverů.",
-            en: "This Blue Screen error code (0x0000007B) happens when the boot process successfully loads the OS kernel into memory, but the kernel lacks the necessary storage device drivers to continue reading from the boot drive. The most common triggers are: (1) Changing the SATA Configuration mode (AHCI to RAID/IDE or vice versa) in BIOS/UEFI. (2) A faulty or incompatible mass storage driver (like Intel RST) installed via Windows Update. (3) Migrating the OS to a different drive or drastically changing the motherboard hardware without injecting key drivers beforehand. Fixes involve reverting the controller mode to its original state in BIOS, or booting to Safe Mode / Windows Recovery Environment to uninstall recent suspect driver updates.",
-            zh: "该蓝屏错误代码 (0x0000007B) 发生于启动过程成功将操作系统内核加载到内存中，但内核随后缺乏必要的存储设备驱动程序以继续读取启动磁盘的情况。最常见的原因是：(1) 在 BIOS/UEFI 中变更了 SATA 配置模式 (AHCI、RAID、IDE 之间切换)；(2) Windows Update 更新了不兼容的存储驱动程序（如 Intel RST）；(3) 迁移系统到另一个磁盘或更换主板硬件但没有提前注入关键驱动程序。修复方法包括在 BIOS 中将控制器模式恢复到原始状态，或进入安全模式/恢复环境卸载最近出现问题的驱动及系统更新。"
+            cs: "Moderní touchpady využívají I2C (Inter-Integrated Circuit) sběrnici namísto starého PS/2. Problémy: (1) Ovladač Intel Serial I/O nebo AMD I2C Controller je zastaralý. (2) Power Management: Windows vypíná I2C kontrolér pro úsporu energie, což touchpad odpojí. (3) Statická elektřina: Špatné uzemnění šasi notebooku může způsobit 'ghost clicks'. (4) Mechanické poškození: Flex kabel pod baterií je často skřípnutý.",
+            en: "Modern touchpads use the I2C bus instead of PS/2. Issues: (1) Outdated Intel Serial I/O or AMD I2C Controller drivers. (2) Power Management: Windows disables the I2C controller to save power, causing the touchpad to drop. (3) Static electricity: Poor grounding can cause ghost clicks. (4) Mechanical: The flex cable under the battery can get pinched.",
+            zh: "现代触摸板使用 I2C 总线。问题：(1) Intel Serial I/O 或 AMD I2C 驱动过旧；(2) 电源管理导致总线关闭；(3) 静电导致幽灵点击；(4) 机械损坏（如电池下方的排线受挤压）。"
         }
     },
     {
-        id: "win-system-thread", type: "software", subcategory: "windows",
-        vendors: ["win10", "win11"],
-        code: "SYSTEM_THREAD_EXCEPTION_NOT_HANDLED",
-        category: { cs: "Windows OS", en: "Windows OS", zh: "Windows 操作系统" },
+        id: "net-mismatch-mtu", type: "software", subcategory: "network",
+        code: "Network MTU Mismatch / PPPoE Issues",
+        category: { cs: "Sítě & Internet", en: "Network & Internet", zh: "网络与互联网" },
         description: {
-            cs: "BSOD způsobený neošetřenou výjimkou v systémovém vlákně, velmi často ovladačem GPU.",
-            en: "BSOD caused by an unhandled exception in a system thread, very often by a GPU driver.",
-            zh: "由系统线程中未处理的异常引起的蓝屏，极常见原因为显卡驱动。"
+            cs: "Některé webové stránky (např. bankovnictví) se nenačítají, zatímco jiné (Google, YouTube) fungují bez problémů.",
+            en: "Some websites (e.g., banking) fail to load, while others (Google, YouTube) work fine.",
+            zh: "某些网站（如网银）无法加载，而其他网站（Google、YouTube）运行正常。"
         },
         solution: {
-            cs: `<ol class="sol-steps">
-<li><strong>Přečtěte .sys soubor z obrazovky BSOD:</strong> Na BSOD obrazovce nebo v Event Vieweru (systémové logy) si zapište název souboru .sys (např. <code>nvlddmkm.sys</code> = NVIDIA driver, <code>atikmdag.sys</code> = AMD driver). Toto je vinná komponenta.</li>
-<li><strong>Otevřete minidump pomocí BlueScreenView:</strong> Stáhněte <strong>BlueScreenView</strong> (Nirsoft) a otevřete jej. Program automaticky analyzuje soubory z <code>C:\Windows\Minidump</code> a zobrazí název vadného ovladače.</li>
-<li><strong>Odinstalujte GPU ovladač pomocí DDU:</strong> Stáhněte <strong>Display Driver Uninstaller (DDU)</strong>. Spusťte jej v nouzovém režimu → vyberte GPU → Clean and Restart. DDU kompletně odstraní všechny ovladačové soubory.</li>
-<li><strong>Nainstalujte čistý ovladač z webu výrobce:</strong> Stáhněte nejnovější (nebo předchozí stabilní) ovladač přímo z webu NVIDIA/AMD. NIKDY nepoužívejte ovladače přes Windows Update pro GPU.</li>
-<li><strong>Pokud není vinníkem GPU ovladač:</strong> Dle .sys souboru identifikujte výrobce komponenty a navštivte jejich web pro aktualizaci (audio, síť, chipset). Zvažte také aktualizaci BIOSu základní desky.</li>
-</ol>`,
-            en: `<ol class="sol-steps">
-<li><strong>Note the .sys file name from the BSOD screen:</strong> On the BSOD screen or in Event Viewer (system logs), write down the .sys file name (e.g., <code>nvlddmkm.sys</code> = NVIDIA driver, <code>atikmdag.sys</code> = AMD driver). This is the guilty component.</li>
-<li><strong>Open the minidump with BlueScreenView:</strong> Download <strong>BlueScreenView</strong> (Nirsoft) and open it. The program automatically analyzes files from <code>C:\Windows\Minidump</code> and shows the name of the faulty driver.</li>
-<li><strong>Uninstall the GPU driver using DDU:</strong> Download <strong>Display Driver Uninstaller (DDU)</strong>. Run it in Safe Mode → select your GPU → Clean and Restart. DDU completely removes all driver files.</li>
-<li><strong>Install a clean driver from the manufacturer's website:</strong> Download the latest (or a previous stable) driver directly from NVIDIA/AMD's website. NEVER use Windows Update for GPU drivers.</li>
-<li><strong>If the GPU driver is not the culprit:</strong> Use the .sys file to identify the component manufacturer and visit their website for an update (audio, network, chipset). Also consider updating the motherboard BIOS.</li>
-</ol>`,
-            zh: `<ol class="sol-steps">
-<li><strong>记录蓝屏上的 .sys 文件名：</strong>在蓝屏界面或事件查看器（系统日志）中，记下 .sys 文件名（例如，<code>nvlddmkm.sys</code> = NVIDIA 驱动，<code>atikmdag.sys</code> = AMD 驱动）。这是导致问题的组件。</li>
-<li><strong>使用 BlueScreenView 打开内存转储：</strong>下载 <strong>BlueScreenView</strong>（Nirsoft），它会自动分析 <code>C:\Windows\Minidump</code> 中的文件并显示故障驱动的名称。</li>
-<li><strong>使用 DDU 卸载 GPU 驱动：</strong>下载 <strong>Display Driver Uninstaller (DDU)</strong>。在安全模式下运行 → 选择您的 GPU → 清除并重启。DDU 会彻底删除所有驱动文件。</li>
-<li><strong>从制造商网站安装干净的驱动：</strong>直接从 NVIDIA/AMD 网站下载最新（或之前的稳定版）驱动。切勿通过 Windows Update 更新 GPU 驱动。</li>
-<li><strong>如果 GPU 驱动不是问题所在：</strong>根据 .sys 文件识别组件制造商，访问其网站获取更新（音频、网络、芯片组）。也可以考虑更新主板 BIOS。</li>
-</ol>`
+            cs: "Nastavte MTU na 1472 nebo 1452 pomocí 'netsh interface ipv4 set subinterface'. Povolte ICMP v firewallu.",
+            en: "Set MTU to 1472 or 1452 using netsh. Enable ICMP in your firewall.",
+            zh: "使用 netsh 将 MTU 设置为 1472 或 1452。在防火墙中启用 ICMP。"
         },
         details: {
-            cs: "Chyba 0x0000007E indikuje, že systémové vlákno vygenerovalo výjimku, kterou error handler jádra nezvládl zachytit. Jedním z nejprofláklejších viníků je zastaralý nebo chybný grafický ovladač (atikmdag.sys, nvlddmkm.sys) či ovladač zvukové karty. Často tuto obrazovku přímo doprovází označení postižené knihovny `.sys`. Diagnostika vyžaduje procházení složky 'C:\\Windows\\Minidump' a vytažení konkrétního souboru k analýze např. z BlueScreenView nebo moderního rozboru WinDbg na odhalení původce výjimky.",
-            en: "Error code 0x0000007E indicates that a system thread generated an exception which the kernel's error handler failed to catch. One of the most notorious culprits behind this crash is an outdated or faulty graphics driver (such as atikmdag.sys or nvlddmkm.sys) or audio driver. Oftentimes, this BSOD will explicitly list the `.sys` file that triggered the crash. Diagnostics require examining the 'C:\\Windows\\Minidump' folder and parsing the dmp file using BlueScreenView or WinDbg to pinpoint the offending driver and upgrade or roll back the relevant software.",
-            zh: "错误代码 0x0000007E 表明系统线程生成了一个异常，而内核的错误处理程序未能捕获。这一崩溃背后最出名的罪魁祸首是过时或故障的显卡驱动（如 atikmdag.sys 或 nvlddmkm.sys）或音频驱动。通常情况下，蓝屏界面会明确列出引发崩溃的 `.sys` 文件。诊断过程需要检查 'C:\\Windows\\Minidump' 文件夹并使用 BlueScreenView 或 WinDbg 分析 dmp 文件，查明出错的驱动程序并将其升级或降级回滚。"
+            cs: "MTU (Maximum Transmission Unit) definuje maximální velikost paketu (standardně 1500 bajtů). Pokud paket přesahuje limit cesty (např. u PPPoE), musí být fragmentován. Pokud je fragmentace zakázána, paket je zahozen. VPN přidávají hlavičky, čímž snižují efektivní MTU (často na 1400). Diagnostika: 'ping google.com -f -l 1472'; pokud je nutná fragmentace, snižujte hodnotu, dokud neprojde.",
+            en: "MTU defines the maximum packet size (default 1500 bytes). If packets exceed path limits (like PPPoE), they must be fragmented. If fragmentation is disabled, packets are dropped. VPNs add headers, reducing effective MTU (often to 1400). Diagnostics: 'ping google.com -f -l 1472'; if fragmentation is needed, lower the value until it passes.",
+            zh: "MTU 定义最大数据包大小（默认 1500 字节）。如果数据包超过路径限制（如 PPPoE），则必须分段。如果禁用分段，数据包将被丢弃。症状：Google 可用，但特定网站（如银行）失败。VPN 会添加标头，降低有效 MTU（通常为 1400）。诊断：'ping google.com -f -l 1472'；如果需要分段，则降低该值直到通过。"
         }
     },
     {
         id: "disk-100-usage", type: "hardware", subcategory: "disk",
-        vendors: ["hdd"],
-        code: "100% Disk Usage in Task Manager",
+        code: "100% Disk Usage / HDD Bottleneck",
         category: { cs: "Disk (SSD/HDD)", en: "Disk (SSD/HDD)", zh: "硬盘" },
         description: {
-            cs: "Disk ve Správci úloh indikuje neustálé 100% využití. Systém extrémně zamrzá a nelze jej ovládat.",
-            en: "Task Manager shows constant 100% disk usage. The system freezes heavily and is unresponsive.",
-            zh: "任务管理器显示磁盘利用率持续 100%。系统严重卡顿且无法响应。"
+            cs: "Systém je extrémně pomalý, UI zamrzá a Správce úloh ukazuje 100% vytížení disku i v nečinnosti.",
+            en: "System is extremely slow, UI freezes, and Task Manager shows 100% disk usage even at idle.",
+            zh: "系统反应极其缓慢，界面冻结，任务管理器显示磁盘利用率即使在闲置时也达到 100%。"
         },
         solution: {
             cs: `<ol class="sol-steps">
-<li><strong>Identifikujte viníka ve Správci úloh:</strong> Otevřete Správce úloh (<kbd>Ctrl + Shift + Esc</kbd>) → záložka Výkon → Disk. V záložce Procesy seřaďte sloupec „Disk" sestupně — zjistíte, který proces disk zahlcuje (typicky: Antimalware Service, SysMain, Windows Update).</li>
-<li><strong>Dočasně zakažte SysMain (Superfetch):</strong> Stiskněte <kbd>Win + R</kbd> → napište <code>services.msc</code> → najděte „SysMain" → Vlastnosti → Typ spouštění = Zakázáno → Stop. Tato služba předem načítá soubory do RAM, ale na HDD je velmi zátěžová.</li>
-<li><strong>Zkontrolujte stav disku (SMART):</strong> Stáhněte <strong>CrystalDiskInfo</strong> — pokud zobrazuje žlutou nebo červenou výstrahu (Reallocated Sectors, Pending Sectors), je disk fyzicky poškozený a je nutná výměna.</li>
+<li><strong>Identifikujte viníka ve Správci úloh:</strong> Otevřete Správce úloh (<kbd>Ctrl + Shift + Esc</kbd>) → karta Výkon → Disk. Na kartě Procesy seřaďte sloupec "Disk" sestupně – zjistěte, který proces disk vytěžuje (typicky: Antimalware Service, SysMain, Windows Update).</li>
+<li><strong>Dočasně zakažte SysMain (Superfetch):</strong> Stiskněte <kbd>Win + R</kbd> → napište <code>services.msc</code> → najděte "SysMain" → Vlastnosti → Typ spouštění = Zakázáno → Zastavit. Tato služba přednačítá soubory do RAM, což je pro HDD velmi náročné.</li>
+<li><strong>Zkontrolujte stav disku (SMART):</strong> Stáhněte <strong>CrystalDiskInfo</strong> — pokud ukazuje žluté nebo červené varování (Reallocated Sectors, Pending Sectors), disk je fyzicky poškozen a je nutná výměna.</li>
 <li><strong>Vyčkejte dokončení Windows Update:</strong> 100% disk využití bývá dočasné při probíhajícím stahování nebo instalaci Windows Update. Nechte PC pracovat bez zásahu a zkontrolujte po hodině.</li>
 <li><strong>Trvalé řešení — přechod na SSD:</strong> Nejúčinnější oprava je výměna HDD za SSD (SATA nebo NVMe). SSD zvládá tisíce IOPS vs. ~100 u HDD — zmizení problému je okamžité a trvalé.</li>
 </ol>`,
@@ -3901,109 +3862,174 @@ const errorCodes = [
             zh: "更新 Serial I/O 驱动程序，在设备管理器中禁用'允许计算机关闭此设备'，检查内部排线。"
         },
         details: {
-            cs: "Moderní touchpady (Precision Touchpads) komunikují přes I2C (Inter-Integrated Circuit) sběrnici místo staršího PS/2. Problémy: (1) Ovladač Intel Serial I/O nebo AMD I2C Controller je zastaralý nebo chybí. (2) Power management: Windows vypíná I2C controller pro úsporu energie, což způsobí lag při 'probuzení' touchpadu. (3) Statická elektřina – nahromaděný náboj na šasi může blokovat kapacitní snímání. (4) Fyzické opotřebení nebo uvolnění flex kabelu uvnitř šasi notebooku. Diagnostika: Device Manager -> Human Interface Devices -> I2C HID Device (zkontrolujte status kód).",
-            en: "Modern Precision Touchpads use the I2C bus instead of legacy PS/2. Issues: (1) Missing or outdated Intel Serial I/O or AMD I2C driver. (2) Power management – Windows suspends the I2C controller, causing wake-up lag. (3) Static electricity buildup on the chassis interfering with capacitive sensing. (4) Physical wear or loose internal flex cable. Diagnostics: Check 'I2C HID Device' status in Device Manager.",
-            zh: "现代精确触摸板使用 I2C 总线。问题：(1) 缺少或过旧的 Intel Serial I/O 或 AMD I2C 驱动；(2) 电源管理导致 I2C 控制器挂起；(3) 机壳静电干扰电容感应；(4) 内部排线磨损或松动。诊断：检查设备管理器中的 'I2C HID Device' 状态。"
+            cs: "Moderní touchpady využívají I2C (Inter-Integrated Circuit) sběrnici namísto starého PS/2. Problémy: (1) Ovladač Intel Serial I/O nebo AMD I2C Controller je zastaralý. (2) Power Management: Windows vypíná I2C kontrolér pro úsporu energie, což touchpad odpojí. (3) Statická elektřina: Špatné uzemnění šasi notebooku může způsobit 'ghost clicks'. (4) Mechanické poškození: Flex kabel pod baterií je často skřípnutý.",
+            en: "Modern touchpads use the I2C bus instead of PS/2. Issues: (1) Outdated Intel Serial I/O or AMD I2C Controller drivers. (2) Power Management: Windows disables the I2C controller to save power, causing the touchpad to drop. (3) Static electricity: Poor grounding can cause ghost clicks. (4) Mechanical: The flex cable under the battery can get pinched.",
+            zh: "现代触摸板使用 I2C 总线。问题：(1) Intel Serial I/O 或 AMD I2C 驱动过旧；(2) 电源管理导致总线关闭；(3) 静电导致幽灵点击；(4) 机械损坏（如电池下方的排线受挤压）。"
         }
     },
     {
-        id: "mon-dead-pixels", type: "hardware", subcategory: "gpu",
-        code: "Dead or Stuck Pixels / Panel Defects",
-        category: { cs: "Grafická karta", en: "Graphics Card", zh: "显卡" },
+        id: "win-kmode-exception", type: "software", subcategory: "windows",
+        vendors: ["microsoft"],
+        code: "KMODE_EXCEPTION_NOT_HANDLED (0x1E)",
+        category: { cs: "Windows OS", en: "Windows OS", zh: "Windows 操作系统" },
         description: {
-            cs: "Na monitoru jsou trvale svítící (stuck) nebo černé (dead) body – vada LCD/OLED panelu.",
-            en: "Permanent bright (stuck) or black (dead) spots on screen – LCD/OLED panel defect.",
-            zh: "屏幕上出现永久亮点（卡住）或黑点（死亡）——LCD/OLED 面板缺陷。"
+            cs: "BSOD chybový kód 0x0000001E. Program v režimu jádra vygeneroval výjimku, kterou obsluha chyb (handler) nezachytila.",
+            en: "BSOD error code 0x0000001E. A kernel-mode program generated an exception which the error handler did not catch.",
+            zh: "蓝屏错误代码 0x0000001E。内核模式程序生成了错误处理程序未捕获的异常。"
         },
         solution: {
-            cs: "Zkuste nástroj JScreenFix. Jemně masírujte místo hadříkem. Reklamujte při překročení limitu (ISO 9241-307).",
-            en: "Try JScreenFix tool. Gently massage the area with a soft cloth. RMA if pixel policy limit is exceeded.",
-            zh: "尝试使用 JScreenFix 工具，用软布轻轻按摩该区域，如果超过像素策略限制则申请售后。"
+            cs: `<ol class="sol-steps">
+<li><strong>Aktualizujte vadné ovladače:</strong> Tato chyba je téměř vždy způsobena špatným ovladačem (.sys). Zkontrolujte Správce zařízení a hledejte vykřičníky.</li>
+<li><strong>Zakažte Rychlé spuštění (Fast Startup):</strong> Jděte do <em>Ovládací panely -> Napájení -> Nastavení tlačítek napájení</em> a vypněte Rychlé spuštění.</li>
+<li><strong>Otestujte RAM:</strong> Použijte MemTest86. Poškozená RAM může způsobit, že kód jádra přistoupí na neplatnou instrukci.</li>
+</ol>`,
+            en: `<ol class="sol-steps">
+<li><strong>Update faulty drivers:</strong> This error is almost always caused by a bad driver (.sys). Check Device Manager for exclamation marks.</li>
+<li><strong>Disable Fast Startup:</strong> Go to <em>Control Panel -> Power Options -> Choose what power buttons do</em> and uncheck Fast Startup.</li>
+<li><strong>Test RAM:</strong> Use MemTest86. Corrupted RAM can cause kernel code to access an invalid instruction.</li>
+</ol>`,
+            zh: `<ol class="sol-steps">
+<li><strong>更新故障驱动程序：</strong>此错误几乎总是由坏驱动程序（.sys）引起。检查设备管理器是否有感叹号。</li>
+<li><strong>禁用快速启动：</strong>在“电源选项”中取消勾选“启用快速启动”。</li>
+<li><strong>测试内存：</strong>使用 MemTest86。损坏的内存可能导致内核代码访问无效指令。</li>
+</ol>`
         },
         details: {
-            cs: "Mrtvý pixel (Dead) je trvale vypnutý subpixel (černý). Zaseknutý pixel (Stuck) je trvale zapnutý (červený, zelený, modrý). Příčiny: (1) Výrobní vada tranzistoru v TFT matici. (2) Mechanické poškození (tlak na panel). (3) U OLED: burn-in (vypálení obrazu) po dlouhodobém zobrazení statického obsahu. ISO 9241-307 definuje třídy monitorů a povolený počet vad (Třída 1 = 0 vad, Třída 2 = běžný standard, povoluje několik vad). Stuck pixely lze někdy 'rozmrazit' rychlou změnou barev (JScreenFix) nebo mírným tlakem, mrtvé pixely jsou fyzicky poškozené a neopravitelné.",
-            en: "A dead pixel is a permanently off subpixel (black). A stuck pixel is permanently on (red, green, or blue). Causes: (1) Manufacturing defect in the TFT transistor. (2) Physical damage from pressure. (3) OLED burn-in from static content. ISO 9241-307 defines monitor classes and allowed defect counts (Class 1 = 0 defects, Class 2 = common standard, allows some). Stuck pixels can sometimes be 'revived' by rapid color cycling (JScreenFix) or gentle pressure; dead pixels are physically broken.",
-            zh: "坏点是永久关闭的子像素（黑色），亮点是永久开启的（红、绿或蓝）。原因：(1) TFT 晶体管制造缺陷；(2) 压力导致的物理损坏；(3) 静态内容导致的 OLED 烧屏。ISO 9241-307 定义了显示器等级和允许的缺陷数量。亮点有时可以通过快速颜色循环恢复，而死点通常无法修复。"
+            cs: "Kód 0x1E. Tato chyba indikuje, že procesor vygeneroval výjimku (např. Access Violation nebo Division by Zero) v privilegovaném režimu, ale tato výjimka nebyla zachycena žádným try-except blokem v ovladači. Nejčastěji jde o ovladače grafiky nebo síťové karty.",
+            en: "Stop code 0x1E. Indicates that the processor generated an exception (e.g., Access Violation or Division by Zero) while in privileged mode, and this exception was not caught by any try-except block in the driver. Usually involves GPU or Network drivers.",
+            zh: "停止代码 0x1E。表示处理器在特权模式下生成了异常（如访问冲突或除以零），且驱动程序中的任何 try-except 块都未捕获该异常。通常涉及 GPU 或网络驱动程序。"
         }
     },
     {
-        id: "gpu-vram-leak", type: "hardware", subcategory: "gpu",
-        code: "VRAM Leak / Performance Degradation Over Time",
-        category: { cs: "Grafická karta", en: "Graphics Card", zh: "显卡" },
+        id: "win-system-service", type: "software", subcategory: "windows",
+        vendors: ["microsoft"],
+        code: "SYSTEM_SERVICE_EXCEPTION (0x3B)",
+        category: { cs: "Windows OS", en: "Windows OS", zh: "Windows 操作系统" },
         description: {
-            cs: "FPS ve hře postupně klesá až k zamrznutí – hra neuvolňuje video paměť (VRAM).",
-            en: "Game FPS gradually drops until freeze – game fails to release video memory (VRAM).",
-            zh: "游戏 FPS 逐渐下降直到冻结——游戏未能释放显存 (VRAM)。"
+            cs: "BSOD chybový kód 0x0000003B. Znamená, že při provádění systémové služby došlo k výjimce při přechodu z neprivilegovaného kódu do privilegovaného.",
+            en: "BSOD error code 0x0000003B. Indicates an exception happened while executing a system service routine during a transition from non-privileged to privileged code.",
+            zh: "蓝屏错误代码 0x0000003B。表示在从非特权代码转换到特权代码的过程中执行系统服务例程时发生了异常。"
         },
         solution: {
-            cs: "Restartujte hru. Snižte Texture Resolution. Aktualizujte GPU ovladač.",
-            en: "Restart the game. Lower Texture Resolution. Update GPU driver.",
-            zh: "重启游戏，降低纹理分辨率，更新 GPU 驱动程序。"
+            cs: `<ol class="sol-steps">
+<li><strong>Aktualizujte ovladače grafické karty:</strong> Častá příčina u zastaralých NVIDIA/AMD ovladačů.</li>
+<li><strong>Spusťte sfc /scannow:</strong> Opravte poškozené systémové soubory, které mohou způsobovat pád systémových služeb.</li>
+<li><strong>Zkontrolujte hardware:</strong> Pokud k chybě dochází náhodně, může jít o nestabilitu CPU nebo RAM.</li>
+</ol>`,
+            en: `<ol class="sol-steps">
+<li><strong>Update GPU drivers:</strong> Common cause with outdated NVIDIA/AMD drivers.</li>
+<li><strong>Run sfc /scannow:</strong> Fix corrupted system files that might be crashing system services.</li>
+<li><strong>Check hardware:</strong> If the error is random, it might be due to CPU or RAM instability.</li>
+</ol>`,
+            zh: `<ol class="sol-steps">
+<li><strong>更新 GPU 驱动程序：</strong>过时的 NVIDIA/AMD 驱动程序是常见原因。</li>
+<li><strong>运行 sfc /scannow：</strong>修复可能导致系统服务崩溃的受损系统文件。</li>
+<li><strong>检查硬件：</strong>如果错误是随机发生的，可能是由于 CPU 或内存不稳定。</li>
+</ol>`
         },
         details: {
-            cs: "VRAM leak nastává, když herní engine alokuje textury a buffery v paměti GPU, ale neodstraní je po změně scény. Výsledek: VRAM se zaplní, GPU začne swapovat textury do systémové RAM (přes PCIe sběrnici), což způsobí masivní propady FPS (stutter). Diagnostika: Sledujte 'Dedicated Video Memory' v MSI Afterburner nebo GPU-Z. Pokud využití lineárně roste bez ohledu na scénu, jde o leak. Časté u neoptimalizovaných portů z konzolí. Dočasné řešení: snížení nastavení textur sníží rychlost zaplňování paměti.",
-            en: "A VRAM leak occurs when a game engine allocates textures and buffers in GPU memory but fails to free them after scene changes. Result: VRAM fills up, forcing the GPU to swap textures to system RAM via PCIe, causing massive stutter. Diagnostics: Monitor 'Dedicated Video Memory' in MSI Afterburner; if usage grows linearly regardless of scene, it's a leak. Common in unoptimized console ports. Temporary fix: lowering texture settings delays saturation.",
-            zh: "当游戏引擎在 GPU 内存中分配纹理和缓冲区但在场景切换后未能释放它们时，就会发生显存泄漏。结果：显存填满，迫使 GPU 通过 PCIe 将纹理交换到系统 RAM，导致严重卡顿。诊断：在 MSI Afterburner 中监控'专用显存'；如果使用量随场景线性增长，则是泄漏。临时修复：降低纹理设置可减缓饱和速度。"
+            cs: "Kód 0x3B. Tato chyba je často spojena s grafickými ovladači (win32k.sys) nebo jinými ovladači uživatelského rozhraní, které nesprávně předávají parametry do jáaner systému.",
+            en: "Stop code 0x3B. This error is often linked to graphics drivers (win32k.sys) or other UI drivers incorrectly passing parameters to the system kernel.",
+            zh: "停止代码 0x3B。此错误通常与图形驱动程序（win32k.sys）或其他 UI 驱动程序不正确地向系统内核传递参数有关。"
         }
     },
     {
-        id: "ram-training-fail", type: "hardware", subcategory: "ram",
-        code: "Memory Training Failed / Long POST Times",
-        category: { cs: "Paměť RAM", en: "Memory (RAM)", zh: "内存" },
+        id: "win-update-0x80070643", type: "software", subcategory: "windows",
+        vendors: ["microsoft"],
+        code: "0x80070643 / Windows Update Error",
+        category: { cs: "Windows OS", en: "Windows OS", zh: "Windows 操作系统" },
         description: {
-            cs: "Počítač dlouho startuje (černá obrazovka) nebo se opakovaně restartuje před načtením BIOSu – selhalo ladění paměti.",
-            en: "PC takes a long time to boot (black screen) or power cycles before BIOS – memory training failure.",
-            zh: "电脑启动时间过长（黑屏）或在进入 BIOS 前反复重启——内存训练失败。"
+            cs: "Obecná chyba instalace aktualizací Windows nebo Microsoft Defenderu. Často způsobeno malým oddílem pro obnovení (Recovery Partition).",
+            en: "General installation error for Windows Updates or Microsoft Defender. Often caused by an undersized Recovery Partition.",
+            zh: "Windows 更新或 Microsoft Defender 的常规安装错误。通常由恢复分区过小引起。"
         },
         solution: {
-            cs: "Povolte 'Memory Context Restore' v BIOSu. Zkontrolujte kompatibilitu modulů v QVL listu. Zkuste nižší frekvenci.",
-            en: "Enable 'Memory Context Restore' in BIOS. Check module compatibility in motherboard QVL. Try a lower frequency.",
-            zh: "在 BIOS 中启用'Memory Context Restore'，检查主板 QVL 中的模块兼容性，尝试降低频率。"
+            cs: `<ol class="sol-steps">
+<li><strong>Zvětšete oddíl pro obnovu (WinRE):</strong> Pro aktualizaci KB5034441 je nutné mít alespoň 250 MB volného místa na Recovery oddílu. Použijte nástroje jako Minitool Partition Wizard.</li>
+<li><strong>Restartujte služby Windows Update:</strong> Otevřete CMD jako správce a zadejte: <code>net stop wuauserv</code>, <code>net stop bits</code>, pak smažte složku <code>C:\\Windows\\SoftwareDistribution</code> a služby znovu spusťte.</li>
+<li><strong>Spusťte .NET Framework Repair Tool:</strong> Stáhněte si jej z webu Microsoftu, pokud chyba souvisí s instalací .NET.</li>
+</ol>`,
+            en: `<ol class="sol-steps">
+<li><strong>Resize the Recovery Partition (WinRE):</strong> For update KB5034441, you need at least 250 MB of free space on the Recovery partition. Use tools like Minitool Partition Wizard.</li>
+<li><strong>Reset Windows Update services:</strong> Open CMD as admin and run: <code>net stop wuauserv</code>, <code>net stop bits</code>, delete the <code>C:\\Windows\\SoftwareDistribution</code> folder, and restart services.</li>
+<li><strong>Run .NET Framework Repair Tool:</strong> Download from Microsoft if the error is related to .NET installation.</li>
+</ol>`,
+            zh: `<ol class="sol-steps">
+<li><strong>调整恢复分区（WinRE）大小：</strong>对于更新 KB5034441，恢复分区至少需要 250 MB 的空闲空间。可以使用 Minitool Partition Wizard 等工具。</li>
+<li><strong>重置 Windows 更新服务：</strong>以管理员身份打开 CMD 并运行：<code>net stop wuauserv</code>、<code>net stop bits</code>，删除 <code>C:\\Windows\\SoftwareDistribution</code> 文件夹，然后重新启动服务。</li>
+<li><strong>运行 .NET Framework 修复工具：</strong>如果错误与 .NET 安装有关，请从微软官网下载。</li>
+</ol>`
         },
         details: {
-            cs: "Memory Training je proces, při kterém BIOS testuje stabilitu signálu mezi CPU a RAM při vysokých frekvencích (DDR5). Nastavuje parametry jako tREFI, napětí a impedance. Problémy: (1) První start s novou RAM trvá i několik minut (běžné u AM5). (2) Nestabilní XMP/EXPO profil – training selže a BIOS se vrátí k základní frekvenci. (3) 'Memory Context Restore' u AMD může zkrátit boot, ale u některých desek způsobuje BSOD – vyžaduje stabilitu. Diagnostika: Sledujte Debug LED na základní desce (DRAM LED svítí dlouho).",
-            en: "Memory Training is the process where BIOS tests signal integrity between CPU and RAM at high frequencies (DDR5). It tunes parameters like tREFI, voltages, and impedances. Issues: (1) First boot with new RAM takes several minutes (common on AM5). (2) Unstable XMP/EXPO profiles – training fails and BIOS reverts to base clocks. (3) 'Memory Context Restore' on AMD shortens boot time but may cause BSODs if timing is borderline. Diagnostics: Watch motherboard Debug LEDs (DRAM LED staying on).",
-            zh: "内存训练是 BIOS 在高频率下测试 CPU 和内存之间信号完整性的过程。它调整 tREFI、电压和阻抗等参数越。问题：(1) 新内存首次启动耗时几分钟（AM5 常见）；(2) XMP/EXPO 配置文件不稳定——训练失败且 BIOS 恢复基础频率；(3) AMD 上的'Memory Context Restore'可缩短启动时间，但在时序边缘可能导致蓝屏。诊断：查看主板 Debug LED。"
+            cs: "Kód 0x80070643 je univerzální chyba (ERROR_INSTALL_FAILURE). V poslední době (leden 2024) se objevuje masivně kvůli neschopnosti Windows Update aktualizovat WinRE oddíl, který je příliš malý pro nové bezpečnostní záplaty.",
+            en: "Code 0x80070643 is a universal error (ERROR_INSTALL_FAILURE). Recently (Jan 2024), it appeared massively due to Windows Update's inability to update the WinRE partition, which is too small for new security patches.",
+            zh: "代码 0x80070643 是通用错误（ERROR_INSTALL_FAILURE）。最近（2024 年 1 月），由于 Windows 更新无法更新过小的 WinRE 分区以安装新的安全补丁，该错误大量出现。"
         }
     },
     {
-        id: "cpu-cold-boot", type: "hardware", subcategory: "cpu",
-        code: "Cold Boot Bug / POST Failure When Cold",
-        category: { cs: "Procesor", en: "Processor", zh: "处理器" },
+        id: "win-update-0x80244018", type: "software", subcategory: "network",
+        vendors: ["microsoft"],
+        code: "0x80244018 / Update Proxy Error",
+        category: { cs: "Windows OS", en: "Windows OS", zh: "Windows 操作系统" },
         description: {
-            cs: "PC se nespustí napoprvé po delší odstávce, ale po restartu funguje bez problémů – napěťová nestabilita za studena.",
-            en: "PC fails first boot after being off, but works fine after restart – voltage instability at cold temperatures.",
-            zh: "电脑在长时间关机后首次启动失败，但在重启后工作正常——低温下电压不稳定。"
+            cs: "Chyba při stahování aktualizací Windows. Systém se pokouší použít proxy server, který je nedostupný nebo nesprávně nastavený.",
+            en: "Error downloading Windows Updates. The system is trying to use a proxy server that is unavailable or incorrectly configured.",
+            zh: "下载 Windows 更新时出错。系统尝试使用不可用或配置不正确的代理服务器。"
         },
         solution: {
-            cs: "Zvyšte mírně napětí SOC nebo Vcore. Vypněte 'Fast Boot' v BIOSu. Zkontrolujte kondenzátory zdroje.",
-            en: "Slightly increase SOC or Vcore voltage. Disable 'Fast Boot' in BIOS. Inspect PSU capacitors.",
-            zh: "轻微提高 SOC 或 Vcore 电压，在 BIOS 中禁用'快速启动'，检查电源电容。"
+            cs: `<ol class="sol-steps">
+<li><strong>Zakažte proxy v nastavení:</strong> Jděte do <em>Nastavení -> Síť a internet -> Proxy</em> a vypněte 'Používat proxy server'.</li>
+<li><strong>Resetujte WinHTTP proxy:</strong> Otevřete CMD jako správce a zadejte <code>netsh winhttp reset proxy</code>.</li>
+<li><strong>Zkontrolujte nastavení času:</strong> Ujistěte se, že datum a čas jsou synchronizovány se serverem time.windows.com.</li>
+</ol>`,
+            en: `<ol class="sol-steps">
+<li><strong>Disable proxy settings:</strong> Go to <em>Settings -> Network & Internet -> Proxy</em> and turn off 'Use a proxy server'.</li>
+<li><strong>Reset WinHTTP proxy:</strong> Open CMD as admin and run <code>netsh winhttp reset proxy</code>.</li>
+<li><strong>Check time settings:</strong> Ensure your date and time are synchronized with time.windows.com.</li>
+</ol>`,
+            zh: `<ol class="sol-steps">
+<li><strong>禁用代理设置：</strong>进入“设置 -> 网络和 Internet -> 代理”，关闭“使用代理服务器”。</li>
+<li><strong>重置 WinHTTP 代理：</strong>以管理员身份打开 CMD 并运行 <code>netsh winhttp reset proxy</code>。</li>
+<li><strong>检查时间设置：</strong>确保日期和时间与 time.windows.com 同步。</li>
+</ol>`
         },
         details: {
-            cs: "Cold Boot Bug je stav, kdy elektronika (VRM, CPU) vyžaduje mírně odlišné napěťové charakteristiky při nízké teplotě. Příčiny: (1) Degradované kondenzátory (v PSU nebo na desce) ztrácejí kapacitu za studena. (2) Agresivní undervolt, který je stabilní při 60°C, ale ne při 20°C. (3) BIOS bug v inicializaci hardware. Diagnostika: Pokud PC vyžaduje 2-3 pokusy o start ráno, ale pak běží celý den stabilně, jde o Cold Boot problém. Řešení: nastavení 'Initial Boot Voltage' (pokud deska dovoluje) nebo mírné navýšení základních napětí.",
-            en: "A Cold Boot Bug occurs when components (VRM, CPU) require slightly different voltage characteristics at low temperatures. Causes: (1) Degraded capacitors (PSU or MB) losing capacity when cold. (2) Aggressive undervolting stable at 60°C but not at 20°C. (3) BIOS hardware initialization bug. Diagnostics: If PC needs 2-3 tries to start in the morning but runs stable afterward, it's a Cold Boot issue. Fix: Increase boot voltages or base SOC/Vcore slightly.",
-            zh: "冷启动 Bug 是指组件在低温下需要略有不同的电压特性。原因：(1) 电源或主板上的电容退化在低温时容量降低；(2) 激进的降压在 60°C 稳定但在 20°C 不稳定；(3) BIOS 硬件初始化错误。诊断：如果电脑早上需要 2-3 次启动尝试但之后运行稳定，则是冷启动问题。修复：稍微提高启动电压或基础 SOC/Vcore。"
+            cs: "Kód 0x80244018 (WU_E_PT_HTTP_STATUS_FORBIDDEN). Windows Update Agent (WUA) obdržel HTTP 403 (Forbidden) od proxy serveru nebo brány Firewall při pokusu o stažení metadat aktualizace.",
+            en: "Code 0x80244018 (WU_E_PT_HTTP_STATUS_FORBIDDEN). The Windows Update Agent (WUA) received an HTTP 403 (Forbidden) response from a proxy or firewall while trying to download update metadata.",
+            zh: "代码 0x80244018。Windows 更新代理在尝试下载更新元数据时从代理或防火墙收到 HTTP 403 响应。"
         }
     },
     {
-        id: "net-mismatch-mtu", type: "software", subcategory: "network",
-        code: "MTU Mismatch / Packet Fragmentation Issues",
-        category: { cs: "Síť", en: "Network", zh: "网络" },
+        id: "win-update-0x80070422", type: "software", subcategory: "windows",
+        vendors: ["microsoft"],
+        code: "0x80070422 / Service Disabled",
+        category: { cs: "Windows OS", en: "Windows OS", zh: "Windows 操作系统" },
         description: {
-            cs: "Některé webové stránky se nenačítají nebo VPN spojení padá – nesprávná velikost MTU paketu.",
-            en: "Some websites won't load or VPN connection drops – incorrect MTU packet size.",
-            zh: "某些网站无法加载或 VPN 连接断开——MTU 数据包大小不正确。"
+            cs: "Služba Windows Update je vypnutá nebo zablokovaná, což znemožňuje vyhledávání a instalaci aktualizací.",
+            en: "The Windows Update service is disabled or blocked, preventing the search and installation of updates.",
+            zh: "Windows 更新服务被禁用或阻止，导致无法搜索和安装更新。"
         },
         solution: {
-            cs: "Zjistěte optimální MTU pomocí 'ping -f -l'. Nastavte MTU na 1492 (pro PPPoE) nebo 1500 (standard).",
-            en: "Find optimal MTU using 'ping -f -l'. Set MTU to 1492 (for PPPoE) or 1500 (standard Ethernet).",
-            zh: "使用 'ping -f -l' 查找最佳 MTU，将 MTU 设置为 1492（PPPoE）或 1500（标准以太网）。"
+            cs: `<ol class="sol-steps">
+<li><strong>Povolte službu Windows Update:</strong> Stiskněte Win+R, napište <code>services.msc</code>. Najděte 'Windows Update', klikněte pravým -> Vlastnosti. Nastavte Typ spouštění na 'Automaticky' a klikněte na Start.</li>
+<li><strong>Zkontrolujte závislé služby:</strong> Ujistěte se, že služby 'Background Intelligent Transfer Service' (BITS) a 'Cryptographic Services' jsou také spuštěny.</li>
+<li><strong>Použijte poradce při potížích:</strong> Jděte do <em>Nastavení -> Aktualizace a zabezpečení -> Odstranit potíže -> Další poradci -> Windows Update</em>.</li>
+</ol>`,
+            en: `<ol class="sol-steps">
+<li><strong>Enable the Windows Update service:</strong> Press Win+R, type <code>services.msc</code>. Find 'Windows Update', right-click -> Properties. Set Startup type to 'Automatic' and click Start.</li>
+<li><strong>Check dependent services:</strong> Ensure 'Background Intelligent Transfer Service' (BITS) and 'Cryptographic Services' are also running.</li>
+<li><strong>Use the Troubleshooter:</strong> Go to <em>Settings -> Update & Security -> Troubleshoot -> Additional troubleshooters -> Windows Update</em>.</li>
+</ol>`,
+            zh: `<ol class="sol-steps">
+<li><strong>启用 Windows 更新服务：</strong>按 Win+R 输入 <code>services.msc</code>。找到“Windows Update”，右键属性，将启动类型设为“自动”并点击启动。</li>
+<li><strong>检查依赖服务：</strong>确保 BITS 和密码服务也在运行。</li>
+<li><strong>使用疑难解答：</strong>在设置中运行 Windows 更新疑难解答。</li>
+</ol>`
         },
         details: {
-            cs: "MTU (Maximum Transmission Unit) určuje maximální velikost paketu (standardně 1500 bajtů). Pokud je paket větší než limit na cestě (např. u PPPoE DSL linky), musí dojít k fragmentaci. Pokud je fragmentace zakázána (DF flag), paket je zahozen. Příznaky: Google funguje, ale specifické weby (např. bankovnictví) ne. VPN tunely přidávají vlastní hlavičky, čímž snižují efektivní MTU (často na 1400). Diagnostika: 'ping google.com -f -l 1472'. Pokud 'Packet needs to be fragmented', snižte číslo dokud ping neprojde.",
-            en: "MTU (Maximum Transmission Unit) defines the largest packet size (default 1500 bytes). If a packet exceeds a path limit (e.g., PPPoE DSL), it must be fragmented. If fragmentation is disabled (DF flag), the packet is dropped. Symptoms: Google works, but specific sites (e.g., banking) fail. VPNs add headers, reducing effective MTU (often to 1400). Diagnostics: 'ping google.com -f -l 1472'; if fragmentation is needed, lower the value until it passes.",
-            zh: "MTU 定义最大数据包大小（默认 1500 字节）。如果数据包超过路径限制（如 PPPoE），则必须分段。如果禁用分段，数据包将被丢弃。症状：Google 可用，但特定网站（如银行）失败。VPN 会添加标头，降低有效 MTU（通常为 1400）。诊断：'ping google.com -f -l 1472'；如果需要分段，则降低该值直到通过。"
+            cs: "Kód 0x80070422 (ERROR_SERVICE_DISABLED). K této chybě často dochází, pokud uživatel použil 'debloater' skripty nebo nástroje pro soukromí, které natvrdo vypínají systémové služby.",
+            en: "Code 0x80070422 (ERROR_SERVICE_DISABLED). This error often occurs if the user has applied 'debloater' scripts or privacy tools that forcefully disable system services.",
+            zh: "代码 0x80070422。如果用户使用了强制禁用系统服务的优化脚本或隐私工具，通常会出现此错误。"
         }
     },
     {
@@ -4687,6 +4713,171 @@ const errorCodes = [
             en: "Error code 0xc0000225 occurs when Boot Configuration Data (BCD) is missing or corrupted. The file \\\\Boot\\\\BCD (or EFI\\\\Microsoft\\\\Boot\\\\BCD) provides instructions to the kernel on where system files are located. Corruption most commonly occurs during disk cloning, power failures during Windows updates, or after attaching the drive to a different computer.",
             zh: "当引导配置数据 (BCD) 缺失或损坏时，将出现错误代码 0xc0000225。\\\\Boot\\\\BCD（或 EFI\\\\Microsoft\\\\Boot\\\\BCD）文件向内核提供有关系统文件所在位置的指令。损坏最常见于磁盘克隆期间、Windows 更新期间断电或将驱动器连接到其他计算机后。"
         }
+    },
+{
+    id: "win-kmode-exception", type: "software", subcategory: "windows",
+        vendors: ["microsoft"],
+            code: "KMODE_EXCEPTION_NOT_HANDLED (0x1E)",
+                category: { cs: "Windows OS", en: "Windows OS", zh: "Windows 操作系统" },
+    description: {
+        cs: "BSOD chybový kód 0x0000001E. Program v režimu jádra vygeneroval výjimku, kterou obsluha chyb (handler) nezachytila.",
+            en: "BSOD error code 0x0000001E. A kernel-mode program generated an exception which the error handler did not catch.",
+                zh: "蓝屏错误代码 0x0000001E。内核模式程序生成了错误处理程序未捕获的异常。"
+    },
+    solution: {
+        cs: `<ol class="sol-steps">
+<li><strong>Aktualizujte vadné ovladače:</strong> Tato chyba je téměř vždy způsobena špatným ovladačem (.sys). Zkontrolujte Správce zařízení a hledejte vykřičníky.</li>
+<li><strong>Zakažte Rychlé spuštění (Fast Startup):</strong> Jděte do <em>Ovládací panely -> Napájení -> Nastavení tlačítek napájení</em> a vypněte Rychlé spuštění.</li>
+<li><strong>Otestujte RAM:</strong> Použijte MemTest86. Poškozená RAM může způsobit, že kód jádra přistoupí na neplatnou instrukci.</li>
+</ol>`,
+            en: `<ol class="sol-steps">
+<li><strong>Update faulty drivers:</strong> This error is almost always caused by a bad driver (.sys). Check Device Manager for exclamation marks.</li>
+<li><strong>Disable Fast Startup:</strong> Go to <em>Control Panel -> Power Options -> Choose what power buttons do</em> and uncheck Fast Startup.</li>
+<li><strong>Test RAM:</strong> Use MemTest86. Corrupted RAM can cause kernel code to access an invalid instruction.</li>
+</ol>`,
+                zh: `<ol class="sol-steps">
+<li><strong>更新故障驱动程序：</strong>此错误几乎总是由坏驱动程序（.sys）引起。检查设备管理器是否有感叹号。</li>
+<li><strong>禁用快速启动：</strong>在“电源选项”中取消勾选“启用快速启动”。</li>
+<li><strong>测试内存：</strong>使用 MemTest86。损坏的内存可能导致内核代码访问无效指令。</li>
+</ol>`
+    },
+    details: {
+        cs: "Kód 0x1E. Tato chyba indikuje, že procesor vygeneroval výjimku (např. Access Violation nebo Division by Zero) v privilegovaném režimu, ale tato výjimka nebyla zachycena žádným try-except blokem v ovladači. Nejčastěji jde o ovladače grafiky nebo síťové karty.",
+            en: "Stop code 0x1E. Indicates that the processor generated an exception (e.g., Access Violation or Division by Zero) while in privileged mode, and this exception was not caught by any try-except block in the driver. Usually involves GPU or Network drivers.",
+                zh: "停止代码 0x1E。表示处理器在特权模式下生成了异常（如访问冲突或除以零），且驱动程序中的任何 try-except 块都未捕获该异常。通常涉及 GPU 或网络驱动程序。"
     }
+},
+{
+    id: "win-system-service", type: "software", subcategory: "windows",
+        vendors: ["microsoft"],
+            code: "SYSTEM_SERVICE_EXCEPTION (0x3B)",
+                category: { cs: "Windows OS", en: "Windows OS", zh: "Windows 操作系统" },
+    description: {
+        cs: "BSOD chybový kód 0x0000003B. Znamená, že při provádění systémové služby došlo k výjimce při přechodu z neprivilegovaného kódu do privilegovaného.",
+            en: "BSOD error code 0x0000003B. Indicates an exception happened while executing a system service routine during a transition from non-privileged to privileged code.",
+                zh: "蓝屏错误代码 0x0000003B。表示在从非特权代码转换到特权代码的过程中执行系统服务例程时发生了异常。"
+    },
+    solution: {
+        cs: `<ol class="sol-steps">
+<li><strong>Aktualizujte ovladače grafické karty:</strong> Častá příčina u zastaralých NVIDIA/AMD ovladačů.</li>
+<li><strong>Spusťte sfc /scannow:</strong> Opravte poškozené systémové soubory, které mohou způsobovat pád systémových služeb.</li>
+<li><strong>Zkontrolujte hardware:</strong> Pokud k chybě dochází náhodně, může jít o nestabilitu CPU nebo RAM.</li>
+</ol>`,
+            en: `<ol class="sol-steps">
+<li><strong>Update GPU drivers:</strong> Common cause with outdated NVIDIA/AMD drivers.</li>
+<li><strong>Run sfc /scannow:</strong> Fix corrupted system files that might be crashing system services.</li>
+<li><strong>Check hardware:</strong> If the error is random, it might be due to CPU or RAM instability.</li>
+</ol>`,
+                zh: `<ol class="sol-steps">
+<li><strong>更新 GPU 驱动程序：</strong>过时的 NVIDIA/AMD 驱动程序是常见原因。</li>
+<li><strong>运行 sfc /scannow：</strong>修复可能导致系统服务崩溃的受损系统文件。</li>
+<li><strong>检查硬件：</strong>如果错误是随机发生的，可能是由于 CPU 或内存不稳定。</li>
+</ol>`
+    },
+    details: {
+        cs: "Kód 0x3B. Tato chyba je často spojena s grafickými ovladači (win32k.sys) nebo jinými ovladači uživatelského rozhraní, které nesprávně předávají parametry do jádra systému.",
+            en: "Stop code 0x3B. This error is often linked to graphics drivers (win32k.sys) or other UI drivers incorrectly passing parameters to the system kernel.",
+                zh: "停止代码 0x3B。此错误通常与图形驱动程序（win32k.sys）或其他 UI 驱动程序不正确地向系统内核传递参数有关。"
+    }
+},
+{
+    id: "win-update-0x80070643", type: "software", subcategory: "windows",
+        vendors: ["microsoft"],
+            code: "0x80070643 / Windows Update Error",
+                category: { cs: "Windows OS", en: "Windows OS", zh: "Windows 操作系统" },
+    description: {
+        cs: "Obecná chyba instalace aktualizací Windows nebo Microsoft Defenderu. Často způsobeno malým oddílem pro obnovení (Recovery Partition).",
+            en: "General installation error for Windows Updates or Microsoft Defender. Often caused by an undersized Recovery Partition.",
+                zh: "Windows 更新或 Microsoft Defender 的常规安装错误。通常由恢复分区过小引起。"
+    },
+    solution: {
+        cs: `<ol class="sol-steps">
+<li><strong>Zvětšete oddíl pro obnovu (WinRE):</strong> Pro aktualizaci KB5034441 je nutné mít alespoň 250 MB volného místa na Recovery oddílu. Použijte nástroje jako Minitool Partition Wizard.</li>
+<li><strong>Restartujte služby Windows Update:</strong> Otevřete CMD jako správce a zadejte: <code>net stop wuauserv</code>, <code>net stop bits</code>, pak smažte složku <code>C:\\Windows\\SoftwareDistribution</code> a služby znovu spusťte.</li>
+<li><strong>Spusťte .NET Framework Repair Tool:</strong> Stáhněte si jej z webu Microsoftu, pokud chyba souvisí s instalací .NET.</li>
+</ol>`,
+            en: `<ol class="sol-steps">
+<li><strong>Resize the Recovery Partition (WinRE):</strong> For update KB5034441, you need at least 250 MB of free space on the Recovery partition. Use tools like Minitool Partition Wizard.</li>
+<li><strong>Reset Windows Update services:</strong> Open CMD as admin and run: <code>net stop wuauserv</code>, <code>net stop bits</code>, delete the <code>C:\\Windows\\SoftwareDistribution</code> folder, and restart services.</li>
+<li><strong>Run .NET Framework Repair Tool:</strong> Download from Microsoft if the error is related to .NET installation.</li>
+</ol>`,
+                zh: `<ol class="sol-steps">
+<li><strong>调整恢复分区（WinRE）大小：</strong>对于更新 KB5034441，恢复分区至少需要 250 MB 的空闲空间。可以使用 Minitool Partition Wizard 等工具。</li>
+<li><strong>重置 Windows 更新服务：</strong>以管理员身份打开 CMD 并运行：<code>net stop wuauserv</code>、<code>net stop bits</code>，删除 <code>C:\\Windows\\SoftwareDistribution</code> 文件夹，然后重新启动服务。</li>
+<li><strong>运行 .NET Framework 修复工具：</strong>如果错误与 .NET 安装有关，请从微软官网下载。</li>
+</ol>`
+    },
+    details: {
+        cs: "Kód 0x80070643 je univerzální chyba (ERROR_INSTALL_FAILURE). V poslední době (leden 2024) se objevuje masivně kvůli neschopnosti Windows Update aktualizovat WinRE oddíl, který je příliš malý pro nové bezpečnostní záplaty.",
+            en: "Code 0x80070643 is a universal error (ERROR_INSTALL_FAILURE). Recently (Jan 2024), it appeared massively due to Windows Update's inability to update the WinRE partition, which is too small for new security patches.",
+                zh: "代码 0x80070643 是通用错误（ERROR_INSTALL_FAILURE）。最近（2024 年 1 月），由于 Windows 更新无法更新过小的 WinRE 分区以安装新的安全补丁，该错误大量出现。"
+    }
+},
+{
+    id: "win-update-0x80244018", type: "software", subcategory: "network",
+        vendors: ["microsoft"],
+            code: "0x80244018 / Update Proxy Error",
+                category: { cs: "Windows OS", en: "Windows OS", zh: "Windows 操作系统" },
+    description: {
+        cs: "Chyba při stahování aktualizací Windows. Systém se pokouší použít proxy server, který je nedostupný nebo nesprávně nastavený.",
+            en: "Error downloading Windows Updates. The system is trying to use a proxy server that is unavailable or incorrectly configured.",
+                zh: "下载 Windows 更新时出错。系统尝试使用不可用或配置不正确的代理服务器。"
+    },
+    solution: {
+        cs: `<ol class="sol-steps">
+<li><strong>Zakažte proxy v nastavení:</strong> Jděte do <em>Nastavení -> Síť a internet -> Proxy</em> a vypněte 'Používat proxy server'.</li>
+<li><strong>Resetujte WinHTTP proxy:</strong> Otevřete CMD jako správce a zadejte <code>netsh winhttp reset proxy</code>.</li>
+<li><strong>Zkontrolujte nastavení času:</strong> Ujistěte se, že datum a čas jsou synchronizovány se serverem time.windows.com.</li>
+</ol>`,
+            en: `<ol class="sol-steps">
+<li><strong>Disable proxy settings:</strong> Go to <em>Settings -> Network & Internet -> Proxy</em> and turn off 'Use a proxy server'.</li>
+<li><strong>Reset WinHTTP proxy:</strong> Open CMD as admin and run <code>netsh winhttp reset proxy</code>.</li>
+<li><strong>Check time settings:</strong> Ensure your date and time are synchronized with time.windows.com.</li>
+</ol>`,
+                zh: `<ol class="sol-steps">
+<li><strong>禁用代理设置：</strong>进入“设置 -> 网络和 Internet -> 代理”，关闭“使用代理服务器”。</li>
+<li><strong>重置 WinHTTP 代理：</strong>以管理员身份打开 CMD 并运行 <code>netsh winhttp reset proxy</code>。</li>
+<li><strong>检查时间设置：</strong>确保日期和时间与 time.windows.com 同步。</li>
+</ol>`
+    },
+    details: {
+        cs: "Kód 0x80244018 (WU_E_PT_HTTP_STATUS_FORBIDDEN). Windows Update Agent (WUA) obdržel HTTP 403 (Forbidden) od proxy serveru nebo brány Firewall při pokusu o stažení metadat aktualizace.",
+            en: "Code 0x80244018 (WU_E_PT_HTTP_STATUS_FORBIDDEN). The Windows Update Agent (WUA) received an HTTP 403 (Forbidden) response from a proxy or firewall while trying to download update metadata.",
+                zh: "代码 0x80244018。Windows 更新代理在尝试下载更新元数据时从代理或防火墙收到 HTTP 403 响应。"
+    }
+},
+{
+    id: "win-update-0x80070422", type: "software", subcategory: "windows",
+        vendors: ["microsoft"],
+            code: "0x80070422 / Service Disabled",
+                category: { cs: "Windows OS", en: "Windows OS", zh: "Windows 操作系统" },
+    description: {
+        cs: "Služba Windows Update je vypnutá nebo zablokovaná, což znemožňuje vyhledávání a instalaci aktualizací.",
+            en: "The Windows Update service is disabled or blocked, preventing the search and installation of updates.",
+                zh: "Windows 更新服务被禁用或阻止，导致无法搜索和安装更新。"
+    },
+    solution: {
+        cs: `<ol class="sol-steps">
+<li><strong>Povolte službu Windows Update:</strong> Stiskněte Win+R, napište <code>services.msc</code>. Najděte 'Windows Update', klikněte pravým -> Vlastnosti. Nastavte Typ spouštění na 'Automaticky' a klikněte na Start.</li>
+<li><strong>Zkontrolujte závislé služby:</strong> Ujistěte se, že služby 'Background Intelligent Transfer Service' (BITS) a 'Cryptographic Services' jsou také spuštěny.</li>
+<li><strong>Použijte poradce při potížích:</strong> Jděte do <em>Nastavení -> Aktualizace a zabezpečení -> Odstranit potíže -> Další poradci -> Windows Update</em>.</li>
+</ol>`,
+            en: `<ol class="sol-steps">
+<li><strong>Enable the Windows Update service:</strong> Press Win+R, type <code>services.msc</code>. Find 'Windows Update', right-click -> Properties. Set Startup type to 'Automatic' and click Start.</li>
+<li><strong>Check dependent services:</strong> Ensure 'Background Intelligent Transfer Service' (BITS) and 'Cryptographic Services' are also running.</li>
+<li><strong>Use the Troubleshooter:</strong> Go to <em>Settings -> Update & Security -> Troubleshoot -> Additional troubleshooters -> Windows Update</em>.</li>
+</ol>`,
+                zh: `<ol class="sol-steps">
+<li><strong>启用 Windows 更新服务：</strong>按 Win+R 输入 <code>services.msc</code>。找到“Windows Update”，右键属性，将启动类型设为“自动”并点击启动。</li>
+<li><strong>检查依赖服务：</strong>确保 BITS 和密码服务也在运行。</li>
+<li><strong>使用疑难解答：</strong>在设置中运行 Windows 更新疑难解答。</li>
+</ol>`
+    },
+    details: {
+        cs: "Kód 0x80070422 (ERROR_SERVICE_DISABLED). K této chybě často dochází, pokud uživatel použil 'debloater' skripty nebo nástroje pro soukromí, které natvrdo vypínají systémové služby.",
+            en: "Code 0x80070422 (ERROR_SERVICE_DISABLED). This error often occurs if the user has applied 'debloater' scripts or privacy tools that forcefully disable system services.",
+                zh: "代码 0x80070422。如果用户使用了强制禁用系统服务的优化脚本或隐私工具，通常会出现此错误。"
+    }
+}
 ];
 //# sourceMappingURL=data.js.map
