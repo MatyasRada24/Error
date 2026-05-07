@@ -173,7 +173,10 @@ ErrorDocument 403 /index.html
 # HTTP/2 SERVER PUSH (Link headers) – uncomment if host supports it
 # Pushes critical resources when the homepage is requested
 # ============================================================
-# <FilesMatch "^index\.html$">
-#     Header add Link "</index.css>; rel=preload; as=style"
-#     Header add Link "</favicon.png?v=1>; rel=preload; as=image"
-# </FilesMatch>
+<FilesMatch "^index\.html$">
+    Header add Link "</index.css>; rel=preload; as=style"
+    Header add Link "</index.js>; rel=preload; as=script"
+    Header add Link "</data.js>; rel=preload; as=script"
+    Header add Link "</favicon.png?v=1>; rel=preload; as=image"
+</FilesMatch>
+
