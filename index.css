@@ -600,7 +600,10 @@ header {
     position: relative;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     overflow: hidden;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 350px; /* Estimate based on card height */
 }
+
 
 .card::before {
     content: '';
