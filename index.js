@@ -260,7 +260,6 @@ function updateURL(params = {}) {
  */
 function getShareURL(errorId) {
     let base = `${window.location.origin}/error/${errorId}/`;
-    if (currentLang !== 'cs') base += `?lang=${encodeURIComponent(currentLang)}`;
     return base;
 }
 
@@ -329,7 +328,13 @@ function preprocessData() {
         };
     });
 }
-preprocessData();
+
+if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => preprocessData());
+} else {
+    setTimeout(preprocessData, 500);
+}
+
 
 // =========================================================
 // Lazy details loading
@@ -368,11 +373,13 @@ window.openById = function (id) {
 // =========================================================
 // Virtual rendering – max RENDER_BATCH cards at a time
 // =========================================================
-const RENDER_BATCH = 12;  // Reduced from 48 to keep initial paint and TBT extremely fast on mobile
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const RENDER_BATCH = isMobile ? 6 : 12; // Further reduced for mobile to minimize TBT
 let currentFinalList = [];
 let renderedCount = 0;
 // scrollListenerActive retained for fallback compatibility
 let scrollListenerActive = false;
+
 
 function loadMoreCards() {
     if (renderedCount >= currentFinalList.length) {
@@ -537,19 +544,22 @@ function renderCards() {
         });
     } else {
         noResultsDiv.classList.add('hidden');
-        // Show skeleton placeholders to hold layout space while cards render
-        resultsContainer.innerHTML = document.getElementById('skeletons').innerHTML;
+        // If it's a new search, show skeletons first
+        if (renderedCount === 0) {
+            resultsContainer.innerHTML = document.getElementById('skeletons').innerHTML;
+        }
 
-        // Use rAF to yield to browser paint, then swap skeletons → real cards
-        // in ONE frame – eliminates the double-shift (skeleton → empty → cards)
+        // Use requestAnimationFrame to ensure the browser has a chance to paint the skeletons
+        // then swap for real cards in the next frame
         requestAnimationFrame(() => {
-            resultsContainer.innerHTML = '';
+            if (renderedCount === 0) resultsContainer.innerHTML = '';
             loadMoreCards();
-            if (currentFinalList.length > RENDER_BATCH) {
+            if (currentFinalList.length > renderedCount) {
                 setupInfiniteScroll();
             }
         });
     }
+
 
     // Sync URL to current search/filter state (no code param – modal is closed)
     updateURL({
@@ -644,7 +654,7 @@ function openModal(err) {
 
     // Push canonical /error/{id}/ URL into browser history
     try {
-        const errPath = `/error/${err.id}/${currentLang !== 'cs' ? '?lang=' + encodeURIComponent(currentLang) : ''}`;
+        const errPath = `/error/${err.id}/`;
         history.pushState({ code: err.id, lang: currentLang, type: activeType }, '', errPath);
     } catch (e) { /* silently skip */ }
 
