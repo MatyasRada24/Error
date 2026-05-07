@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Mobile: prevent iOS auto-zoom on input focus by keeping scale=1 but allowing user zoom -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Error Code Explorer - Databáze chybových kódů PC | BSOD, GPU, CPU, Windows Fix</title>
+    <meta name="description"
+        content="Prohledej největší českou databázi chybových kódů PC. Oprav BSOD, GPU Code 43, CPU WHEA, BIOS, síťové a Windows chyby. Krok za krokem řešení pro 0x80070005, CRITICAL_PROCESS_DIED, nvlddmkm.sys a další.">
+    <meta name="keywords"
+        content="error code, chybový kód, BSOD fix, řešení chyb PC, Windows error, GPU Code 43, WHEA_UNCORRECTABLE_ERROR, nvlddmkm.sys, CPU throttling, RAM error, NVMe, SMART status, MEMORY_MANAGEMENT, CRITICAL_PROCESS_DIED, BOOTMGR missing, DPC_WATCHDOG_VIOLATION">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="author" content="Error Code Explorer">
+    <meta name="theme-color" content="#0b0f1a">
+    <link rel="canonical" href="https://errorsfixer.com/">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png?v=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.png?v=1">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon.png?v=1">
+    <!-- Hreflang pro multijazyčné indexování -->
+    <link rel="alternate" hreflang="cs" href="https://errorsfixer.com/">
+    <link rel="alternate" hreflang="en" href="https://errorsfixer.com/en">
+    <link rel="alternate" hreflang="zh" href="https://errorsfixer.com/zh">
+    <link rel="alternate" hreflang="x-default" href="https://errorsfixer.com/">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Error Code Explorer – Databáze chybových kódů PC">
+    <meta property="og:description"
+        content="Prohledej databázi chybových kódů PC. Oprav BSOD, GPU, CPU, BIOS a Windows chyby – krok za krokem.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://errorsfixer.com/">
+    <meta property="og:image" content="https://errorsfixer.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="cs_CZ">
+    <meta property="og:site_name" content="Error Code Explorer">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Error Code Explorer – Databáze chybových kódů PC">
+    <meta name="twitter:description"
+        content="Prohledej databázi chybových kódů PC. Oprav BSOD, GPU, CPU, BIOS a Windows chyby.">
+    <meta name="twitter:image" content="https://errorsfixer.com/og-image.png">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+    <link rel="preconnect" href="https://cloud.umami.is">
+    <script defer src="https://cloud.umami.is/script.js"
+        data-website-id="b4fe54d6-ad35-4c15-a989-d698d0bfb313"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EBEZDRH882"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7065796179852038"
+        crossorigin="anonymous"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-EBEZDRH882');
+    </script>
+    <!-- CSS is loaded at the end of head for performance -->
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Error Code Explorer",
+      "url": "https://errorsfixer.com/",
+      "description": "Největší česká databáze chybových kódů PC s krok za krokem řešeními pro BSOD, GPU, CPU, BIOS a Windows chyby.",
+      "inLanguage": ["cs", "en", "zh"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://errorsfixer.com/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Co znamená Code 43 u grafické karty?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Code 43 je chyba Správce zařízení Windows – GPU ovladač ohlásil kernelu neobnovitelnou chybu přes TDR mechanismus. Řešení: čistá reinstalace ovladače pomocí DDU v Safe Mode, zkontrolovat napájení PCIe a teplotu GPU."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Jak opravit WHEA_UNCORRECTABLE_ERROR?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "WHEA_UNCORRECTABLE_ERROR (BSOD 0x0000124) nastává při hardwarové nestabilitě CPU nebo RAM. Řešení: zakázat přetaktování v BIOSu, spustit MemTest86 pro otestování RAM, zkontrolovat Event Viewer pro WHEA-Logger záznamy."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Co dělat při S.M.A.R.T. Status Bad u disku?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "S.M.A.R.T. Status Bad signalizuje blížící se selhání disku. Okamžitě zálohujte všechna data na jiné médium, ověřte stav v CrystalDiskInfo a plánujte výměnu disku."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Jak opravit nvlddmkm.sys BSOD?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "nvlddmkm.sys BSOD (TDR Failure) je způsoben pádem NVIDIA GPU ovladače. Řešení: stáhněte DDU, spusťte Windows v Safe Mode, kompletně odstraňte ovladač a nainstalujte nejnovější verzi z nvidia.com. Zkontrolujte také teplotu GPU a stabilitu přetaktování."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Co je BSOD a jak ho opravit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "BSOD (Blue Screen of Death) je kritická systémová chyba Windows způsobená selháním hardwaru nebo ovladačů. Identifikujte stop kód (např. IRQL_NOT_LESS_OR_EQUAL, MEMORY_MANAGEMENT), spusťte sfc /scannow a MemTest86 pro diagnostiku RAM."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Jak poznat, že SSD selhává?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Příznaky selhávajícího SSD: pomalý přístup k souborům, časté zamrzání, chyby při kopírování, modré obrazovky. Stáhněte CrystalDiskInfo a zkontrolujte S.M.A.R.T. atributy – zejména #05 Reallocated Sectors, #197 Pending Sectors a #198 Uncorrectable Sectors."
+          }
+        }
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Nejčastější chybové kódy PC",
+      "description": "Databáze chybových kódů PC s krok za krokem řešeními",
+      "url": "https://errorsfixer.com/",
+      "numberOfItems": 30,
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Code 43 – GPU Error", "description": "Windows zastavil grafickou kartu – řešení přes DDU reinstalaci ovladače."},
+        {"@type": "ListItem", "position": 2, "name": "WHEA_UNCORRECTABLE_ERROR", "description": "BSOD 0x0000124 způsobený nestabilitou CPU nebo RAM."},
+        {"@type": "ListItem", "position": 3, "name": "S.M.A.R.T. Status Bad", "description": "Disk hrozí selháním – okamžitě zálohujte data."},
+        {"@type": "ListItem", "position": 4, "name": "nvlddmkm.sys TDR Crash", "description": "NVIDIA GPU ovladač selhal – oprava pomocí DDU v Safe Mode."},
+        {"@type": "ListItem", "position": 5, "name": "CRITICAL_PROCESS_DIED", "description": "Kritický systémový proces byl ukončen – oprava přes sfc /scannow."},
+        {"@type": "ListItem", "position": 6, "name": "DNS_PROBE_FINISHED_NXDOMAIN", "description": "Prohlížeč nemůže přeložit doménové jméno – změňte DNS na 8.8.8.8."},
+        {"@type": "ListItem", "position": 7, "name": "CPU Thermal Throttling", "description": "Procesor snižuje frekvenci kvůli přehřátí – vyměňte teplovodivou pastu."},
+        {"@type": "ListItem", "position": 8, "name": "BOOTMGR is missing", "description": "Windows bootloader chybí – oprava přes bootrec /rebuildbcd."}
+      ]
+    }
+    </script>
+    <!-- SoftwareApplication schema: Google zobrazí hodnocení, kategorii a platformu přímo v SERP -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Error Code Explorer",
+      "url": "https://errorsfixer.com/",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Web, Windows, Android, iOS",
+      "description": "Interaktivní nástroj pro diagnostiku a opravu chybových kódů PC. Obsahuje řešení pro BSOD, GPU, CPU, RAM, disk a síťové chyby.",
+      "inLanguage": ["cs", "en", "zh"],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "CZK"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "124",
+        "bestRating": "5"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Error Code Explorer",
+        "url": "https://errorsfixer.com/"
+      }
+    }
+    </script>
+    <!-- HowTo schema: Google zobrazí instrukce krok za krokem přímo ve vyhledávání -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "Jak opravit BSOD (Modrá obrazovka) ve Windows",
+      "description": "Krok za krokem průvodce diagnostikou a opravou BSOD chyb ve Windows 10 a 11.",
+      "totalTime": "PT30M",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Zjistěte stop kód",
+          "text": "Při dalším BSOD si na modré obrazovce poznamenejte stop kód (např. IRQL_NOT_LESS_OR_EQUAL). Pokud restart proběhl příliš rychle, otevřete Prohlížeč událostí (eventvwr.msc) a hledejte záznamy v sekci Windows Logs > System."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Prohledejte databázi chybových kódů",
+          "text": "Zadejte stop kód do vyhledávače na Error Code Explorer (errorsfixer.com) a naleznete přímo řešení pro váš konkrétní problém."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Spusťte sfc /scannow",
+          "text": "Otevřete CMD jako správce a zadejte: sfc /scannow. Tento nástroj automaticky opraví poškozené systémové soubory Windows."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "name": "Otestujte RAM pomocí MemTest86",
+          "text": "Stáhněte MemTest86, napište ho na USB a spusťte test před nabíháním Windows. Pokud test nalezne chyby, je příčinou BSOD poškozená RAM."
+        }
+      ]
+    }
+    </script>
+    <!-- BreadcrumbList: zlepšuje zobrazení v SERP (drobková navigace) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Error Code Explorer",
+          "item": "https://errorsfixer.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Databáze chybových kódů",
+          "item": "https://errorsfixer.com/?type=all"
+        }
+      ]
+    }
+    </script>
+    <link rel="preconnect" href="https://cloud.umami.is">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preload" href="favicon.png?v=1" as="image" type="image/png">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" as="style"
+        fetchpriority="high" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    </noscript>
+    <style id="critical-css">
+        /* CSS proměnné – nutné pro všechny ostatní styly */
+        :root {
+            --bg: #0f172a;
+            --bg-color: #0b0f1a;
+            --card-bg: rgba(23, 32, 53, 0.75);
+            --card-border: rgba(148, 163, 184, 0.12);
+            --accent: #38bdf8;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --hw-color: #f97316;
+            --sw-color: #8b5cf6;
+            --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Základ stránky – zamezení bílého záblesku při načtení */
+        body {
+            background: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        /* Kritické pro CLS – .lang-switcher je absolutně pozicovaný hned při načtení */
+        .lang-switcher {
+            position: absolute;
+            top: 0;
+            right: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(15, 23, 42, 0.95);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            border: 1px solid var(--card-border);
+        }
+
+
+
+        .badge {
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 0.3rem 0.7rem;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+
+
+        .badge.hardware {
+            background: rgba(249, 115, 22, 0.2);
+            color: var(--hw-color);
+        }
+
+        .badge.software {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--sw-color);
+        }
+
+
+
+        /* Rezervuje prostor pro karty – zabrání obrovskému CLS při vkládání karet */
+        #results {
+            min-height: 600px;
+        }
+
+        /* .hidden musí být k dispozici okamžitě (JS ho používá při inicializaci) */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Fallback font pro zamení CLS při načtení Outfit fontu.
+           Hodnoty vypočteny z font-metrics Outfit vs Arial pro csů/en text. */
+        @font-face {
+            font-family: 'Outfit-fallback';
+            src: local('Arial'), local('Helvetica Neue'), local('Segoe UI');
+            size-adjust: 100%;
+            ascent-override: 96%;
+            descent-override: 24%;
+            line-gap-override: 0%;
+        }
+
+        body {
+            font-family: 'Outfit', 'Outfit-fallback', sans-serif;
+        }
+
+        /* FontAwesome – inline definice ikon zamezuje závislosti na externím CSS */
+        @font-face {
+            font-family: 'Font Awesome 6 Free';
+            font-style: normal;
+            font-weight: 900;
+            font-display: swap;
+            src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2') format('woff2');
+        }
+
+        .fa-solid {
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            -webkit-font-smoothing: antialiased;
+            display: inline-block;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            line-height: 1;
+        }
+
+        .fa-bug-slash::before {
+            content: "\e490";
+        }
+
+        .fa-magnifying-glass::before {
+            content: "\f002";
+        }
+
+        .fa-xmark::before {
+            content: "\f00d";
+        }
+
+        .fa-globe::before {
+            content: "\f0ac";
+        }
+
+        .fa-sliders::before {
+            content: "\f1de";
+        }
+
+        .fa-chevron-down::before {
+            content: "\f078";
+        }
+
+        .fa-fire-flame-curved::before {
+            content: "\f7e4";
+        }
+
+        .fa-ghost::before {
+            content: "\f6e2";
+        }
+
+        .fa-flag::before {
+            content: "\f024";
+        }
+
+        .fa-circle-info::before {
+            content: "\f05a";
+        }
+
+        .fa-wrench::before {
+            content: "\f0ad";
+        }
+
+        .fa-copy::before {
+            content: "\f0c5";
+        }
+
+        .fa-check::before {
+            content: "\f00c";
+        }
+
+        .fa-circle-notch::before {
+            content: "\f1ce";
+        }
+
+        .fa-paper-plane::before {
+            content: "\f1d8";
+        }
+
+        .fa-microscope::before {
+            content: "\f610";
+        }
+
+        .fa-play::before {
+            content: "\f144";
+        }
+
+        .fa-arrow-up-right-from-square::before {
+            content: "\f35d";
+        }
+
+        .fa-share-nodes::before {
+            content: "\f1e0";
+        }
+
+        .fa-link::before {
+            content: "\f0c1";
+        }
+
+        .fa-spin {
+            animation: fa-spin 2s infinite linear;
+        }
+
+        @keyframes fa-spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── Button & Layout FOUC prevention ────────────────────────────── */
+        button {
+            -webkit-appearance: none;
+            appearance: none;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+            padding: 0;
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            padding: 0.6rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            background: var(--accent);
+            color: var(--bg-color);
+            border-color: var(--accent);
+        }
+
+        /* Card styles for LCP – ensures top errors are styled immediately */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-title {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .solution {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .solution h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.9rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Modal close – prevent icon showing as button */
+        .modal-close {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            justify-content: center;
+        }
+
+        /* Clear search */
+        #clearSearch {
+            color: var(--text-secondary);
+            padding: 0.2rem;
+        }
+
+        /* Skryje nativní modrý křížek od prohlížeče */
+        input[type="search"]::-webkit-search-decoration,
+        input[type="search"]::-webkit-search-cancel-button,
+        input[type="search"]::-webkit-search-results-button,
+        input[type="search"]::-webkit-search-results-decoration {
+            -webkit-appearance: none;
+            display: none;
+        }
+
+        /* Mobile Performance Optimization */
+        @media (max-width: 768px) {
+            .orb {
+                display: none !important;
+            }
+
+            * {
+                backdrop-filter: none !important;
+            }
+        }
+    </style>
+    <link rel="preload" href="index.css" as="style">
+    <link rel="stylesheet" href="index.css">
+    <!-- Prefers-reduced-motion: disable orb animations for accessibility + perf -->
+    <style id="motion-pref">
+        @media (prefers-reduced-motion: reduce) {
+            .orb {
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-elements">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="bg-grid"></div>
+        <div class="noise"></div>
+    </div>
+
+    <div class="container">
+        <header role="banner">
+            <div class="logo">
+                <i class="fa-solid fa-bug-slash" aria-hidden="true" title="Error Explorer Logo"></i>
+                <h1 id="siteTitle">Error Code Explorer</h1>
+            </div>
+            <p class="subtitle" id="siteSubtitle">Vyhledej řešení pro svůj problémový kód</p>
+            <!-- Lang switcher moved here in DOM for better mobile flow (CSS positions it absolutely on desktop) -->
+
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
+                    <input type="search" id="searchInput" placeholder="Hledat kód (např. 0x800, Code 43, BSOD)..."
+                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                        aria-label="Vyhledat chybový kód">
+                    <button id="clearSearch" class="hidden" aria-label="Vymazat vyhledávání"><i
+                            class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+                </div>
+
+                <div class="popular-searches" id="popularSearches">
+                    <span class="popular-label" id="popularLabel">Populární:</span>
+                    <button class="popular-tag"
+                        onclick="document.getElementById('searchInput').value='0x80070005'; document.getElementById('searchInput').dispatchEvent(new Event('input'))">0x80070005</button>
+                    <button class="popular-tag"
+                        onclick="document.getElementById('searchInput').value='Clock Watchdog'; document.getElementById('searchInput').dispatchEvent(new Event('input'))">Clock
+                        Watchdog</button>
+                    <button class="popular-tag"
+                        onclick="document.getElementById('searchInput').value='Code 43'; document.getElementById('searchInput').dispatchEvent(new Event('input'))">Code
+                        43</button>
+                    <button class="popular-tag"
+                        onclick="document.getElementById('searchInput').value='WHEA'; document.getElementById('searchInput').dispatchEvent(new Event('input'))">WHEA</button>
+                    <button class="popular-tag"
+                        onclick="document.getElementById('searchInput').value='0xc0000225'; document.getElementById('searchInput').dispatchEvent(new Event('input'))">0xc0000225</button>
+                    <button class="popular-tag"
+                        onclick="document.getElementById('searchInput').value='nvlddmkm.sys'; document.getElementById('searchInput').dispatchEvent(new Event('input'))">nvlddmkm.sys</button>
+                    <button class="popular-tag"
+                        onclick="document.getElementById('searchInput').value='CRITICAL_PROCESS'; document.getElementById('searchInput').dispatchEvent(new Event('input'))">CRITICAL_PROCESS</button>
+                    <button class="popular-tag"
+                        onclick="document.getElementById('searchInput').value='0x80070422'; document.getElementById('searchInput').dispatchEvent(new Event('input'))">0x80070422</button>
+                </div>
+            </div>
+
+            <div class="lang-switcher-custom" id="langSwitcher">
+                <div class="lang-selected" id="langSelected">
+                    <i class="fa-solid fa-globe"></i>
+                    <span id="currentLangText">Čeština</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="lang-options" id="langOptions">
+                    <div class="lang-option" data-value="cs">Čeština</div>
+                    <div class="lang-option" data-value="en">English</div>
+                    <div class="lang-option" data-value="zh">中文 (Chinese)</div>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" data-type="all">Vše</button>
+                <button class="tab" data-type="hardware">Hardware</button>
+                <button class="tab" data-type="software">Software</button>
+            </div>
+
+            <button class="filter-toggle hidden" id="filterToggle" aria-label="Zobrazit filtry a kategorie">
+                <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+                <span>Filtry</span>
+                <i class="fa-solid fa-chevron-down toggle-chevron" aria-hidden="true"></i>
+            </button>
+
+            <div class="filters-collapsible" id="filtersCollapsible">
+                <div class="sub-tabs hidden" id="hwSubTabs">
+                    <button class="sub-tab active" data-sub="all">Všechny</button>
+                    <button class="sub-tab" data-sub="gpu">Grafická karta</button>
+                    <button class="sub-tab" data-sub="cpu">Procesor</button>
+                    <button class="sub-tab" data-sub="mb">Základní deska</button>
+                    <button class="sub-tab" data-sub="ram">RAM</button>
+                    <button class="sub-tab" data-sub="disk">Disk</button>
+                </div>
+
+                <div class="sub-tabs sw-sub-tabs hidden" id="swSubTabs">
+                    <button class="sub-tab sw active" data-swsub="all">Vše</button>
+                    <button class="sub-tab sw" data-swsub="windows">Windows</button>
+                    <button class="sub-tab sw" data-swsub="bios">BIOS / UEFI</button>
+                    <button class="sub-tab sw" data-swsub="network">Síť</button>
+                    <button class="sub-tab sw" data-swsub="apps">Aplikace &amp; Hry</button>
+                    <button class="sub-tab sw" data-swsub="drivers">Ovladače</button>
+                </div>
+
+                <div class="vendor-tabs hidden" id="vendorTabs">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+        </header>
+
+
+
+        <main id="results" role="main" aria-label="Výsledky vyhledávání chybových kódů">
+            <!-- Pre-rendered top errors for SEO indexing --
+                 onclick → opens SPA modal; anchor → crawlable link to dedicated page -->
+            <div class="card hardware reveal active" onclick="openById('gpu-43')">
+                <div class="card-header">
+                    <span class="badge hardware">HARDWARE</span>
+                    <span class="category">Grafická karta</span>
+                </div>
+                <h3 class="code-title"><a href="/error/gpu-43/" class="card-title-link"
+                        onclick="event.stopPropagation();openById('gpu-43');return false;">Code 43</a></h3>
+                <div class="card-section">
+                    <p class="description"><strong>Obecný Popis:</strong> Windows zastavil grafickou kartu (chybová
+                        zpráva ve Správci zařízení). Ovladač GPU ohlásil kernelu neobnovitelnou chybu.</p>
+                </div>
+                <div class="solution">
+                    <h4><i class="fa-solid fa-wrench"></i> Možné řešení:</h4>
+                    <p>Čistá reinstalace ovladače přes DDU v Safe Mode, kontrola napájení a teploty GPU.</p>
+                </div>
+                <a href="/error/gpu-43/" class="card-detail-link" onclick="event.stopPropagation()">Zobrazit celý
+                    průvodce →</a>
+            </div>
+            <div class="card hardware reveal active" onclick="openById('cpu-whea')">
+                <div class="card-header">
+                    <span class="badge hardware">HARDWARE</span>
+                    <span class="category">Procesor</span>
+                </div>
+                <h3 class="code-title"><a href="/error/cpu-whea/" class="card-title-link"
+                        onclick="event.stopPropagation();openById('cpu-whea');return false;">WHEA_UNCORRECTABLE_ERROR</a>
+                </h3>
+                <div class="card-section">
+                    <p class="description"><strong>Obecný Popis:</strong> Kritická hardwarová chyba procesoru nebo
+                        chipsetu (BSOD 0x124). Často způsobeno nestabilitou nebo přehříváním.</p>
+                </div>
+                <div class="solution">
+                    <h4><i class="fa-solid fa-wrench"></i> Možné řešení:</h4>
+                    <p>Zrušení přetaktování v BIOSu, update firmware desky a kontrola napětí CPU.</p>
+                </div>
+                <a href="/error/cpu-whea/" class="card-detail-link" onclick="event.stopPropagation()">Zobrazit celý
+                    průvodce →</a>
+            </div>
+            <div class="card hardware reveal active" onclick="openById('gpu-tdr')">
+                <div class="card-header">
+                    <span class="badge hardware">HARDWARE</span>
+                    <span class="category">Grafická karta</span>
+                </div>
+                <h3 class="code-title"><a href="/error/gpu-tdr/" class="card-title-link"
+                        onclick="event.stopPropagation();openById('gpu-tdr');return false;">nvlddmkm.sys / TDR Crash</a>
+                </h3>
+                <div class="card-section">
+                    <p class="description"><strong>Obecný Popis:</strong> Pád ovladače NVIDIA grafické karty. Obrazovka
+                        zčerná a systém se pokusí o restart ovladače.</p>
+                </div>
+                <div class="solution">
+                    <h4><i class="fa-solid fa-wrench"></i> Možné řešení:</h4>
+                    <p>Zvýšení TdrDelay v registrech, čistá instalace ovladačů a podtaktování pamětí přes Afterburner.
+                    </p>
+                </div>
+                <a href="/error/gpu-tdr/" class="card-detail-link" onclick="event.stopPropagation()">Zobrazit celý
+                    průvodce →</a>
+            </div>
+        </main>
+
+        <!-- Skeleton Template -->
+        <div id="skeletons" class="hidden">
+            <div class="card skeleton">
+                <div class="skeleton-header"></div>
+                <div class="skeleton-title"></div>
+                <div class="skeleton-text"></div>
+                <div class="skeleton-text short"></div>
+                <div class="skeleton-footer"></div>
+            </div>
+            <div class="card skeleton">
+                <div class="skeleton-header"></div>
+                <div class="skeleton-title"></div>
+                <div class="skeleton-text"></div>
+                <div class="skeleton-text short"></div>
+                <div class="skeleton-footer"></div>
+            </div>
+            <div class="card skeleton">
+                <div class="skeleton-header"></div>
+                <div class="skeleton-title"></div>
+                <div class="skeleton-text"></div>
+                <div class="skeleton-text short"></div>
+                <div class="skeleton-footer"></div>
+            </div>
+        </div>
+
+        <div id="noResults" class="hidden no-results">
+            <i class="fa-solid fa-ghost"></i>
+            <h2>Nenalezen žádný kód</h2>
+            <p>Zkuste upravit hledaný výraz. Hledali jste příliš specificky?</p>
+            <button class="report-btn" id="reportMissingBtn">
+                <i class="fa-solid fa-flag"></i>
+                <span id="reportBtnText">Nahlásit chybějící kód</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <span class="badge" id="modalBadge"></span>
+                <span class="category" id="modalCategory"></span>
+                <div class="modal-header-actions">
+                    <button class="copy-btn" id="shareBtn" aria-label="Sdílet odkaz">
+                        <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
+                    </button>
+                    <button class="copy-btn" id="copyCodeBtn" aria-label="Kopírovat kód">
+                        <i class="fa-solid fa-copy" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+            <h2 id="modalTitle" class="modal-title"></h2>
+            <div class="modal-body">
+                <div class="modal-section modal-desc-section">
+                    <h3><i class="fa-solid fa-circle-info"></i> <span id="modalDescTitle">Obecný Popis</span></h3>
+                    <p id="modalDesc"></p>
+                </div>
+                <div class="modal-section modal-sol-section">
+                    <h3><i class="fa-solid fa-wrench"></i> <span id="modalSolTitle">Řešení</span></h3>
+                    <div id="modalSolution"></div>
+                </div>
+                <div class="modal-section modal-yt-section hidden" id="modalYtSection">
+                    <h3><i class="fa-solid fa-play"></i> <span>Video tutoriály</span></h3>
+                    <div id="modalYtLinks" class="yt-links"></div>
+                </div>
+                <div class="modal-section advanced">
+                    <h3><i class="fa-solid fa-microscope"></i> <span id="modalAdvTitle">Technické Detaily (Deep
+                            Dive)</span></h3>
+                    <p id="modalDetails"></p>
+                </div>
+                <a id="modalExternalLink" href="#" target="_blank" class="external-link">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    <span id="modalExternalText">Hledat oficiální dokumentaci</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="reportModal" class="modal-overlay hidden">
+        <div class="modal-content report-modal-content">
+            <button class="modal-close" id="reportModalClose"><i class="fa-solid fa-xmark"></i></button>
+            <div class="report-modal-icon"><i class="fa-solid fa-flag"></i></div>
+            <h2 id="reportModalTitle">Nahlásit chybějící kód</h2>
+            <p id="reportModalDesc" class="report-modal-desc">Víš o chybovém kódu, který tu chybí? Napiš nám o něm a my
+                ho přidáme do databáze.</p>
+            <div class="report-form">
+                <div class="report-field">
+                    <label for="reportCode" id="reportCodeLabel">Chybový kód</label>
+                    <input type="text" id="reportCode" placeholder="Např. 0x8007000E, MEMORY_MANAGEMENT...">
+                </div>
+                <div class="report-field">
+                    <label for="reportNote" id="reportNoteLabel">Popis problému (volitelné)</label>
+                    <textarea id="reportNote" rows="3" placeholder="Co se ti děje? Kdy chyba nastane?"></textarea>
+                </div>
+                <button class="report-submit-btn" id="reportSubmitBtn">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span id="reportSubmitText">Odeslat návrh</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 id="footerTitle"><i class="fa-solid fa-bug-slash"></i> Error Explorer</h3>
+                <p id="footerDescription">Prémiová databáze pro diagnostiku PC a řešení chybových kódů. Pomáháme vám
+                    rozumět technologiím od
+                    roku 2024.</p>
+            </div>
+            <div class="footer-section">
+                <h4 id="footerNavTitle">Navigace</h4>
+                <div class="footer-links">
+                    <a href="#dashboard" id="footerLinkDashboard">Přehled chyb</a>
+                    <a href="#results" id="footerLinkDatabase">Databáze</a>
+                    <a href="#" id="footerLinkReport" onclick="openReportModal(); return false;">Nahlásit kód</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4 id="footerStatusTitle">Stav služby</h4>
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span id="footerStatusText">Všechny systémy online</span>
+                </div>
+            </div>
+        </div>
+        <p class="footer-disclaimer" id="footerDisclaimer"></p>
+        <div class="footer-bottom" id="footerCopyright">
+            &copy; 2026 Error Code Explorer. Vytvořeno pro komunitu hardware nadšenců.
+        </div>
+    </footer>
+
+    <!-- Database loaded separately for better caching and faster JS parse -->
+    <script src="data.js" defer></script>
+    <script src="index.js" defer></script>
+</body>
+
+</html>
