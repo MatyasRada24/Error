@@ -33,7 +33,6 @@
   <meta name="twitter:description"
     content="Comprehensive database of BSOD, GPU, CPU, DirectX, and Windows errors with solutions." />
   <meta name="twitter:image" content="https://errorsfixer.com/og-image.png" />
-  <meta name="google-adsense-account" content="ca-pub-7065796179852038">
 
   <!-- Structured Data: WebSite + SearchAction -->
   <script type="application/ld+json">
@@ -80,11 +79,53 @@
     ]
   }
   </script>
-  <!-- DNS prefetch for performance -->
+  <!-- Google AdSense account verification -->
+  <meta name="google-adsense-account" content="ca-pub-7065796179852038" />
+
+  <!-- DNS prefetch + preconnect for performance -->
   <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
   <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+  <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+  <link rel="dns-prefetch" href="https://cloud.umami.is" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://www.googletagmanager.com" />
+  <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+
+  <!-- Deferred 3rd-party analytics & ads (loaded 2.5s after page load) -->
+  <script>
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        // Umami Analytics
+        var umami = document.createElement('script');
+        umami.async = true;
+        umami.defer = true;
+        umami.src = 'https://cloud.umami.is/script.js';
+        umami.dataset.websiteId = 'b4fe54d6-ad35-4c15-a989-d698d0bfb313';
+        document.head.appendChild(umami);
+
+        // Google Analytics (GA4)
+        var gtm = document.createElement('script');
+        gtm.async = true;
+        gtm.src = 'https://www.googletagmanager.com/gtag/js?id=G-EBEZDRH882';
+        document.head.appendChild(gtm);
+        gtm.onload = function () {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+          gtag('config', 'G-EBEZDRH882');
+        };
+
+        // Google AdSense
+        var adsense = document.createElement('script');
+        adsense.async = true;
+        adsense.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7065796179852038';
+        adsense.crossOrigin = 'anonymous';
+        document.head.appendChild(adsense);
+      }, 2500);
+    });
+  </script>
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
