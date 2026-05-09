@@ -298,6 +298,7 @@
     </div>
   </header>
 
+  <main>
   <section class="hero" id="hero">
     <div class="hero-content">
       <div class="hero-badge">
@@ -505,7 +506,7 @@
           </p>
         </div>
         <div class="errors-tools">
-          <select id="severity-filter" class="select-styled">
+          <select id="severity-filter" class="select-styled" aria-label="Filter by severity">
             <option value="all">All Severities</option>
             <option value="critical">Critical</option>
             <option value="high">High</option>
@@ -569,13 +570,14 @@
       </div>
     </div>
   </section>
+  </main>
 
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
       <div class="modal-badge" id="modal-badge"></div>
       <div class="modal-code" id="modal-code"></div>
-      <h2 class="modal-title" id="modal-title"></h2>
+      <h2 class="modal-title" id="modal-title">Error Details</h2>
       <div class="modal-meta">
         <span class="modal-severity" id="modal-severity"></span>
         <span class="modal-cat" id="modal-cat"></span>
@@ -698,7 +700,7 @@
           <p>Comprehensive error code database for technicians and enthusiasts.</p>
         </div>
         <div class="footer-links">
-          <h4>Categories</h4>
+          <h3>Categories</h3>
           <a href="#" data-subcat="cpu" data-parent="hardware" class="footer-cat-link">Processor</a>
           <a href="#" data-subcat="gpu" data-parent="hardware" class="footer-cat-link">Graphics</a>
           <a href="#" data-subcat="windows" data-parent="software" class="footer-cat-link">Windows</a>
@@ -706,7 +708,7 @@
           <a href="#" data-subcat="sw-bios" data-parent="software" class="footer-cat-link">SW BIOS/FW</a>
         </div>
         <div class="footer-links">
-          <h4>Community</h4>
+          <h3>Community</h3>
           <button class="footer-report-btn" id="footer-report-btn">Report Missing Code</button>
         </div>
       </div>
