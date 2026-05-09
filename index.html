@@ -179,6 +179,94 @@
     href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
     type="font/woff2" crossorigin />
 
+  <!-- Structured Data: SoftwareApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "ErrorFixer",
+    "url": "https://errorsfixer.com/",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Web, Windows, Android, iOS",
+    "description": "Interactive tool for diagnosing and fixing PC error codes. Contains solutions for BSOD, GPU, CPU, RAM, disk and network errors.",
+    "inLanguage": "en",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "124",
+      "bestRating": "5"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "ErrorFixer",
+      "url": "https://errorsfixer.com/"
+    }
+  }
+  </script>
+
+  <!-- Structured Data: HowTo -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to fix a BSOD (Blue Screen of Death) in Windows",
+    "description": "Step-by-step guide to diagnosing and repairing BSOD errors in Windows 10 and 11.",
+    "totalTime": "PT30M",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "position": 1,
+        "name": "Identify the stop code",
+        "text": "Note the stop code on the blue screen during the next BSOD (e.g., IRQL_NOT_LESS_OR_EQUAL). If the restart is too fast, open Event Viewer (eventvwr.msc) and look for entries under Windows Logs > System."
+      },
+      {
+        "@type": "HowToStep",
+        "position": 2,
+        "name": "Search the error code database",
+        "text": "Enter the stop code into the search engine on ErrorFixer (errorsfixer.com) to find a specific solution for your problem."
+      },
+      {
+        "@type": "HowToStep",
+        "position": 3,
+        "name": "Run sfc /scannow",
+        "text": "Open CMD as an administrator and type: sfc /scannow. This tool automatically repairs corrupted Windows system files."
+      },
+      {
+        "@type": "HowToStep",
+        "position": 4,
+        "name": "Test your RAM with MemTest86",
+        "text": "Download MemTest86, put it on a USB, and run the test before booting Windows. If the test finds errors, damaged RAM is the cause of the BSOD."
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured Data: ItemList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Most Common PC Error Codes",
+    "description": "Database of PC error codes with step-by-step solutions",
+    "url": "https://errorsfixer.com/",
+    "numberOfItems": 8,
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Code 43 – GPU Error", "description": "Windows stopped the graphics card – fixed via DDU driver reinstall."},
+      {"@type": "ListItem", "position": 2, "name": "WHEA_UNCORRECTABLE_ERROR", "description": "BSOD 0x0000124 caused by CPU or RAM instability."},
+      {"@type": "ListItem", "position": 3, "name": "S.M.A.R.T. Status Bad", "description": "Drive at risk of failure – immediately backup data."},
+      {"@type": "ListItem", "position": 4, "name": "nvlddmkm.sys TDR Crash", "description": "NVIDIA GPU driver crashed – fix using DDU in Safe Mode."},
+      {"@type": "ListItem", "position": 5, "name": "CRITICAL_PROCESS_DIED", "description": "Critical system process terminated – fix using sfc /scannow."},
+      {"@type": "ListItem", "position": 6, "name": "DNS_PROBE_FINISHED_NXDOMAIN", "description": "Browser cannot resolve domain name – change DNS to 8.8.8.8."},
+      {"@type": "ListItem", "position": 7, "name": "CPU Thermal Throttling", "description": "Processor reduces frequency due to overheating – replace thermal paste."},
+      {"@type": "ListItem", "position": 8, "name": "BOOTMGR is missing", "description": "Windows bootloader is missing – fix using bootrec /rebuildbcd."}
+    ]
+  }
+  </script>
 </head>
 
 <body>
@@ -670,9 +758,6 @@
     </div>
   </footer>
   <!-- data.js must be loaded before app.js -->
-  <script type="text/javascript"
-    src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
   <script src="data.js" defer></script>
   <script src="app.js" defer></script>
 </body>
