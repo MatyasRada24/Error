@@ -50,6 +50,15 @@ const CAT_LABEL = { hardware: 'Hardware', software: 'Software' };
 var ERRORS_BY_ID = new Map();
 ERRORS.forEach(function (e) { ERRORS_BY_ID.set(e.id, e); });
 
+/* ── XSS-safe HTML escape for dynamic content ── */
+function escHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
 function updateCounts() {
     // Build subcat frequency map once
     var counts = {};
@@ -112,9 +121,30 @@ function getFiltered() {
     return list;
 }
 
+/* ── Skeleton Loading ── */
+function showSkeletons(count) {
+    var cols = 5;
+    var html = '';
+    for (var i = 0; i < count; i++) {
+        var widths = ['55%', '72%', '88%', '65%', '48%'];
+        var delay = (i * 80) + 'ms';
+        html += '<tr class="skeleton-row" style="animation-delay:' + delay + '">';
+        for (var c = 0; c < cols; c++) {
+            html += '<td><span class="skel" style="width:' + widths[c] + '"></span></td>';
+        }
+        html += '</tr>';
+    }
+    tbody.innerHTML = html;
+}
+
 var _renderRafId = null;
 function renderTable() {
-    if (_renderRafId) return; // coalesce rapid calls
+    if (_renderRafId) return;
+    // Show skeletons immediately for perceived performance
+    showSkeletons(Math.min(PAGE_SIZE, 8));
+    var table = $('error-table');
+    emptyState.style.display = 'none';
+    table.style.display = 'table';
     _renderRafId = requestAnimationFrame(function () {
         _renderRafId = null;
         _renderTableNow();
@@ -131,9 +161,29 @@ function _renderTableNow() {
     resultCount.textContent = list.length + ' errors';
 
     if (!list.length) {
-        emptyState.style.display = 'flex';
         table.style.display = 'none';
         renderPagination(0, 0);
+        // Rich empty state: different message when searching vs. filtering
+        if (searchQuery) {
+            emptyState.innerHTML =
+                '<svg class="empty-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+                '<circle cx="52" cy="52" r="36" stroke="var(--accent)" stroke-width="3" stroke-dasharray="6 4" opacity="0.4"/>' +
+                '<line x1="79" y1="79" x2="104" y2="104" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.5"/>' +
+                '<circle cx="52" cy="52" r="22" fill="var(--accent-glow)"/>' +
+                '<text x="52" y="58" text-anchor="middle" font-size="22" fill="var(--accent)" opacity="0.7">?</text>' +
+                '</svg>' +
+                '<h3>No results for &ldquo;' + escHtml(searchQuery) + '&rdquo;</h3>' +
+                '<p>This error code might not be in our database yet.</p>' +
+                '<button class="empty-report-btn" id="empty-report-btn">&#43; Report Missing Code</button>';
+            var btn = document.getElementById('empty-report-btn');
+            if (btn) btn.addEventListener('click', openReport);
+        } else {
+            emptyState.innerHTML =
+                '<div class="empty-icon">🔎</div>' +
+                '<h3>No results found</h3>' +
+                '<p>Try a different keyword or filter.</p>';
+        }
+        emptyState.style.display = 'flex';
         return;
     }
     emptyState.style.display = 'none';
@@ -243,6 +293,22 @@ function updateHeader() {
     errorsSubtitle.textContent = info.sub || '';
 }
 
+/* ── Win version badge map ── */
+var WIN_VER_LABEL = {
+    'win10': 'Windows 10',
+    'win11': 'Windows 11',
+    'win10-11': 'Windows 10 / 11',
+    'win7': 'Windows 7',
+    'win-all': 'All Windows'
+};
+
+function highlightMatch(text, q) {
+    if (!q) return escHtml(text);
+    var escaped = escHtml(text);
+    var escapedQ = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return escaped.replace(new RegExp('(' + escapedQ + ')', 'gi'), '<mark class="hl">$1</mark>');
+}
+
 function openModal(err) {
     $('modal-badge').textContent = (CAT_LABEL[err.cat] || err.cat) + ' \u203a ' + (SUBCATS[err.subcat] ? SUBCATS[err.subcat].label : err.subcat);
     $('modal-code').textContent = err.code;
@@ -251,23 +317,111 @@ function openModal(err) {
     sev.textContent = SEV_DOT[err.severity] + ' ' + SEV_LABEL[err.severity];
     sev.className = 'modal-severity severity-badge ' + SEV_CSS[err.severity];
     $('modal-cat').textContent = err.id;
+
+    // Windows version tag
+    var winTagEl = $('modal-win-ver');
+    if (err.winver && WIN_VER_LABEL[err.winver]) {
+        winTagEl.textContent = '\uD83D\uDDA5\uFE0F ' + WIN_VER_LABEL[err.winver];
+        winTagEl.style.display = 'inline-flex';
+    } else if (err.subcat === 'windows' || err.subcat === 'drivers') {
+        winTagEl.textContent = '\uD83D\uDDA5\uFE0F Windows 10 / 11';
+        winTagEl.style.display = 'inline-flex';
+    } else {
+        winTagEl.style.display = 'none';
+    }
+
     $('modal-desc').textContent = err.desc;
-    $('modal-causes').innerHTML = err.causes.map(function (c) { return '<li>' + c + '</li>'; }).join('');
-    $('modal-fixes').innerHTML = err.fixes.map(function (f) { return '<li>' + f + '</li>'; }).join('');
+    $('modal-causes').innerHTML = err.causes.map(function (c) { return '<li>' + escHtml(c) + '</li>'; }).join('');
+    $('modal-fixes').innerHTML = err.fixes.map(function (f) { return '<li>' + escHtml(f) + '</li>'; }).join('');
+
+    // Commands with copy buttons
     var cmdSec = $('modal-cmd-section');
     if (err.cmds && err.cmds.length) {
         cmdSec.style.display = 'block';
-        $('modal-cmds').innerHTML = err.cmds.map(function (c) { return '<div class="cmd-block">' + c + '</div>'; }).join('');
+        $('modal-cmds').innerHTML = err.cmds.map(function (c, i) {
+            return '<div class="cmd-row">' +
+                '<div class="cmd-block" id="cmd-text-' + i + '">' + escHtml(c) + '</div>' +
+                '<button class="cmd-copy-btn" data-cmd="' + escHtml(c) + '" data-idx="' + i + '" aria-label="Copy command" title="Copy">' +
+                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">' +
+                '<rect x="9" y="9" width="13" height="13" rx="2"/>' +
+                '<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>' +
+                '</svg>' +
+                '</button>' +
+                '</div>';
+        }).join('');
+        // Attach copy handlers
+        $('modal-cmds').querySelectorAll('.cmd-copy-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var text = btn.dataset.cmd;
+                navigator.clipboard.writeText(text).then(function () {
+                    btn.classList.add('copied');
+                    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
+                    setTimeout(function () {
+                        btn.classList.remove('copied');
+                        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+                    }, 1800);
+                }).catch(function () {
+                    // Fallback for non-HTTPS
+                    var ta = document.createElement('textarea');
+                    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+                    document.body.appendChild(ta); ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    btn.classList.add('copied');
+                    setTimeout(function () { btn.classList.remove('copied'); }, 1800);
+                });
+            });
+        });
     } else {
         cmdSec.style.display = 'none';
     }
+
+    // Related errors: same subcat, different id, ranked by severity weight
+    var SEV_WEIGHT = { critical: 4, high: 3, medium: 2, low: 1 };
+    var related = ERRORS
+        .filter(function (e) { return e.subcat === err.subcat && e.id !== err.id; })
+        .sort(function (a, b) { return (SEV_WEIGHT[b.severity] || 0) - (SEV_WEIGHT[a.severity] || 0); })
+        .slice(0, 4);
+    var relSec = $('modal-related-section');
+    var relList = $('modal-related-list');
+    if (related.length) {
+        relList.innerHTML = related.map(function (r) {
+            return '<div class="related-item" data-id="' + r.id + '">' +
+                '<span class="related-code">' + escHtml(r.code) + '</span>' +
+                '<span class="related-name">' + escHtml(r.name) + '</span>' +
+                '<span class="severity-badge ' + SEV_CSS[r.severity] + ' related-sev">' + SEV_LABEL[r.severity] + '</span>' +
+                '</div>';
+        }).join('');
+        relList.querySelectorAll('.related-item').forEach(function (el) {
+            el.addEventListener('click', function () {
+                var target = ERRORS_BY_ID.get(el.dataset.id);
+                if (target) openModal(target);
+            });
+        });
+        relSec.style.display = 'block';
+    } else {
+        relSec.style.display = 'none';
+    }
+
     modalOverlay.classList.add('open');
     document.body.style.overflow = 'hidden';
+    // Scroll modal to top on each open
+    var modalEl = $('modal');
+    if (modalEl) modalEl.scrollTop = 0;
+
+    // Update URL for sharing
+    if (!window.history.state || window.history.state.code !== err.code) {
+        window.history.pushState({ code: err.code }, '', '?code=' + encodeURIComponent(err.code));
+    }
 }
 
 function closeModal() {
     modalOverlay.classList.remove('open');
     document.body.style.overflow = '';
+    // Restore URL
+    if (window.location.search.includes('code=')) {
+        window.history.pushState(null, '', window.location.pathname);
+    }
 }
 
 function switchSubcat(subcat, parent) {
@@ -376,10 +530,13 @@ function renderDropdown(query) {
     var html = countLabel + scored.map(function (item) {
         var err = item.e;
         var sevClass = SEV_CSS[err.severity] || '';
+        // Highlight matched term in code and name
+        var hlCode = highlightMatch(err.code, q);
+        var hlName = highlightMatch(err.name, q);
         return '<div class="sd-item" tabindex="0" data-id="' + err.id + '">' +
             '<div class="sd-main">' +
-            '<span class="sd-code">' + escHtml(err.code) + '</span>' +
-            '<span class="sd-name">' + escHtml(err.name) + '</span>' +
+            '<span class="sd-code">' + hlCode + '</span>' +
+            '<span class="sd-name">' + hlName + '</span>' +
             '</div>' +
             '<span class="sd-sev severity-badge ' + sevClass + '">' + (SEV_LABEL[err.severity] || '') + '</span>' +
             '</div>';
@@ -647,6 +804,28 @@ document.addEventListener('DOMContentLoaded', function () {
     initParticles();
     observeCounters('#stats');
     renderTrendingCards();
+
+    // Handle deep linking from URL
+    var params = new URLSearchParams(window.location.search);
+    var codeParam = params.get('code');
+    if (codeParam) {
+        var err = ERRORS.find(function(e) { return e.code === codeParam; });
+        if (err) {
+            openModal(err);
+        }
+    }
+});
+
+// Handle browser back/forward buttons
+window.addEventListener('popstate', function(e) {
+    var params = new URLSearchParams(window.location.search);
+    var codeParam = params.get('code');
+    if (codeParam) {
+        var err = ERRORS.find(function(er) { return er.code === codeParam; });
+        if (err) openModal(err);
+    } else {
+        closeModal();
+    }
 });
 
 var TREND_CODES = [
