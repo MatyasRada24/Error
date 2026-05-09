@@ -46,11 +46,9 @@ const SEV_CSS = { critical: 'sev-critical', high: 'sev-high', medium: 'sev-mediu
 const SEV_DOT = { critical: '\uD83D\uDD34', high: '\uD83D\uDFE0', medium: '\uD83D\uDFE1', low: '\uD83D\uDFE2' };
 const CAT_LABEL = { hardware: 'Hardware', software: 'Software' };
 
-/* ── Performance: O(1) ID lookup map ── */
 var ERRORS_BY_ID = new Map();
 ERRORS.forEach(function (e) { ERRORS_BY_ID.set(e.id, e); });
 
-/* ── XSS-safe HTML escape for dynamic content ── */
 function escHtml(str) {
     return String(str)
         .replace(/&/g, '&amp;')
@@ -60,7 +58,6 @@ function escHtml(str) {
 }
 
 function updateCounts() {
-    // Build subcat frequency map once
     var counts = {};
     ERRORS.forEach(function (e) { counts[e.subcat] = (counts[e.subcat] || 0) + 1; });
     Object.keys(SUBCATS).forEach(function (s) {
@@ -68,9 +65,6 @@ function updateCounts() {
         if (el) el.textContent = counts[s] || 0;
     });
 }
-
-/* Memoized scoreError: caches scores per (id, query) to avoid recomputing
-   during Array.sort() which calls the comparator many times per element. */
 var _scoreCache = Object.create(null);
 var _scoreCacheQuery = '';
 function scoreError(e, q) {
@@ -110,7 +104,6 @@ function getFiltered() {
         if (searchFilter !== 'all') {
             list = list.filter(function (e) { return e.cat === searchFilter || e.subcat === searchFilter; });
         }
-        // Sort by relevance score descending
         list = list.slice().sort(function (a, b) {
             return scoreError(b, q) - scoreError(a, q);
         });
@@ -121,7 +114,6 @@ function getFiltered() {
     return list;
 }
 
-/* ── Skeleton Loading ── */
 function showSkeletons(count) {
     var cols = 5;
     var html = '';
@@ -140,7 +132,6 @@ function showSkeletons(count) {
 var _renderRafId = null;
 function renderTable() {
     if (_renderRafId) return;
-    // Show skeletons immediately for perceived performance
     showSkeletons(Math.min(PAGE_SIZE, 8));
     var table = $('error-table');
     emptyState.style.display = 'none';
@@ -163,7 +154,6 @@ function _renderTableNow() {
     if (!list.length) {
         table.style.display = 'none';
         renderPagination(0, 0);
-        // Rich empty state: different message when searching vs. filtering
         if (searchQuery) {
             emptyState.innerHTML =
                 '<svg class="empty-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">' +
@@ -293,7 +283,6 @@ function updateHeader() {
     errorsSubtitle.textContent = info.sub || '';
 }
 
-/* ── Win version badge map ── */
 var WIN_VER_LABEL = {
     'win10': 'Windows 10',
     'win11': 'Windows 11',
@@ -334,7 +323,6 @@ function openModal(err) {
     $('modal-causes').innerHTML = err.causes.map(function (c) { return '<li>' + escHtml(c) + '</li>'; }).join('');
     $('modal-fixes').innerHTML = err.fixes.map(function (f) { return '<li>' + escHtml(f) + '</li>'; }).join('');
 
-    // Commands with copy buttons
     var cmdSec = $('modal-cmd-section');
     if (err.cmds && err.cmds.length) {
         cmdSec.style.display = 'block';
@@ -349,7 +337,6 @@ function openModal(err) {
                 '</button>' +
                 '</div>';
         }).join('');
-        // Attach copy handlers
         $('modal-cmds').querySelectorAll('.cmd-copy-btn').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 var text = btn.dataset.cmd;
@@ -361,7 +348,6 @@ function openModal(err) {
                         btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
                     }, 1800);
                 }).catch(function () {
-                    // Fallback for non-HTTPS
                     var ta = document.createElement('textarea');
                     ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
                     document.body.appendChild(ta); ta.select();
@@ -376,7 +362,6 @@ function openModal(err) {
         cmdSec.style.display = 'none';
     }
 
-    // Related errors: same subcat, different id, ranked by severity weight
     var SEV_WEIGHT = { critical: 4, high: 3, medium: 2, low: 1 };
     var related = ERRORS
         .filter(function (e) { return e.subcat === err.subcat && e.id !== err.id; })
@@ -405,11 +390,9 @@ function openModal(err) {
 
     modalOverlay.classList.add('open');
     document.body.style.overflow = 'hidden';
-    // Scroll modal to top on each open
     var modalEl = $('modal');
     if (modalEl) modalEl.scrollTop = 0;
 
-    // Update URL for sharing
     if (!window.history.state || window.history.state.code !== err.code) {
         window.history.pushState({ code: err.code }, '', '?code=' + encodeURIComponent(err.code));
     }
@@ -418,7 +401,6 @@ function openModal(err) {
 function closeModal() {
     modalOverlay.classList.remove('open');
     document.body.style.overflow = '';
-    // Restore URL
     if (window.location.search.includes('code=')) {
         window.history.pushState(null, '', window.location.pathname);
     }
@@ -485,13 +467,11 @@ document.querySelectorAll('.filter-chip').forEach(function (chip) {
     });
 });
 
-/* ── Live autocomplete dropdown ── */
 var searchDropdown = (function () {
     var el = document.createElement('div');
     el.id = 'search-dropdown';
     el.className = 'search-dropdown';
     el.style.display = 'none';
-    // Insert after the search box wrapper
     var box = $('hero-inline-box');
     if (box && box.parentNode) box.parentNode.insertBefore(el, box.nextSibling);
     return el;
@@ -530,7 +510,6 @@ function renderDropdown(query) {
     var html = countLabel + scored.map(function (item) {
         var err = item.e;
         var sevClass = SEV_CSS[err.severity] || '';
-        // Highlight matched term in code and name
         var hlCode = highlightMatch(err.code, q);
         var hlName = highlightMatch(err.name, q);
         return '<div class="sd-item" tabindex="0" data-id="' + err.id + '">' +
@@ -548,7 +527,7 @@ function renderDropdown(query) {
         item.addEventListener('mousedown', function (ev) {
             ev.preventDefault();
             var id = item.dataset.id;
-            var err = ERRORS_BY_ID.get(id); // O(1) Map lookup
+            var err = ERRORS_BY_ID.get(id);
             if (err) {
                 searchDropdown.style.display = 'none';
                 searchDropdown.innerHTML = '';
@@ -610,7 +589,7 @@ var searchTimer;
 globalSearch.addEventListener('input', function () {
     clearTimeout(searchTimer);
     var rawVal = globalSearch.value.trim();
-    renderDropdown(rawVal); // instant dropdown (no delay)
+    renderDropdown(rawVal);
     searchTimer = setTimeout(function () {
         searchQuery = rawVal;
         currentPage = 1;
@@ -622,7 +601,7 @@ globalSearch.addEventListener('input', function () {
         } else {
             searchResultsInfo.style.display = 'none';
         }
-        renderTable(); // deferred via rAF inside renderTable()
+        renderTable();
     }, 200);
 });
 
@@ -801,27 +780,24 @@ document.addEventListener('DOMContentLoaded', function () {
     updateCounts();
     updateHeader();
     renderTable();
-    initParticles();
+    setTimeout(initParticles, 100);
     observeCounters('#stats');
     renderTrendingCards();
-
-    // Handle deep linking from URL
     var params = new URLSearchParams(window.location.search);
     var codeParam = params.get('code');
     if (codeParam) {
-        var err = ERRORS.find(function(e) { return e.code === codeParam; });
+        var err = ERRORS.find(function (e) { return e.code === codeParam; });
         if (err) {
             openModal(err);
         }
     }
 });
 
-// Handle browser back/forward buttons
-window.addEventListener('popstate', function(e) {
+window.addEventListener('popstate', function (e) {
     var params = new URLSearchParams(window.location.search);
     var codeParam = params.get('code');
     if (codeParam) {
-        var err = ERRORS.find(function(er) { return er.code === codeParam; });
+        var err = ERRORS.find(function (er) { return er.code === codeParam; });
         if (err) openModal(err);
     } else {
         closeModal();
