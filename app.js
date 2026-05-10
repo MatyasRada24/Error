@@ -10,7 +10,6 @@ let currentSeverity = 'all';
 let searchQuery = '';
 let currentPage = 1;
 const PAGE_SIZE = 15;
-
 const $ = id => document.getElementById(id);
 
 const tbody = $('error-tbody');
@@ -23,7 +22,6 @@ const errorsTitle = $('errors-title');
 const errorsSubtitle = $('errors-subtitle');
 const modalOverlay = $('modal-overlay');
 const searchResultsInfo = $('search-results-info');
-
 const SUBCATS = {
     cpu: { label: 'CPU Errors', sub: 'Hardware CPU faults, thermal limits, WHEA' },
     gpu: { label: 'GPU Errors', sub: 'TDR crash, Code 43, nvlddmkm, DXGI errors' },
@@ -44,7 +42,6 @@ const SEV_LABEL = { critical: 'Critical', high: 'High', medium: 'Medium', low: '
 const SEV_CSS = { critical: 'sev-critical', high: 'sev-high', medium: 'sev-medium', low: 'sev-low' };
 const SEV_DOT = { critical: '\uD83D\uDD34', high: '\uD83D\uDFE0', medium: '\uD83D\uDFE1', low: '\uD83D\uDFE2' };
 const CAT_LABEL = { hardware: 'Hardware', software: 'Software' };
-
 var ERRORS_BY_ID = new Map();
 ERRORS.forEach(function (e) { ERRORS_BY_ID.set(e.id, e); });
 
@@ -55,7 +52,6 @@ function escHtml(str) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
 }
-
 function updateCounts() {
     var counts = {};
     ERRORS.forEach(function (e) { counts[e.subcat] = (counts[e.subcat] || 0) + 1; });
@@ -112,7 +108,6 @@ function getFiltered() {
     }
     return list;
 }
-
 function showSkeletons(count) {
     var cols = 5;
     var html = '';
@@ -455,7 +450,6 @@ document.querySelectorAll('.footer-cat-link').forEach(function (link) {
         $('categories').scrollIntoView({ behavior: 'smooth' });
     });
 });
-
 var searchDropdown = (function () {
     var el = document.createElement('div');
     el.id = 'search-dropdown';
@@ -571,7 +565,6 @@ searchDropdown.addEventListener('keydown', function (e) {
         items[idx].dispatchEvent(new MouseEvent('mousedown'));
     }
 });
-
 var searchTimer;
 globalSearch.addEventListener('input', function () {
     clearTimeout(searchTimer);
@@ -612,7 +605,6 @@ severityFilter.addEventListener('change', function () {
 $('modal-close').addEventListener('click', closeModal);
 modalOverlay.addEventListener('click', function (e) { if (e.target === modalOverlay) closeModal(); });
 document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeModal(); closeReport(); } });
-
 var themeToggle = $('theme-toggle');
 var iconMoon = $('icon-moon');
 var iconSun = $('icon-sun');
@@ -790,7 +782,6 @@ window.addEventListener('popstate', function (e) {
         closeModal();
     }
 });
-
 var TREND_CODES = [
     'WHEA_UNCORRECTABLE_ERROR',
     'nvlddmkm',
