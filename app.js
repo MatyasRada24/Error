@@ -8,7 +8,6 @@ let currentCat = 'hardware';
 let currentSubcat = 'cpu';
 let currentSeverity = 'all';
 let searchQuery = '';
-let searchFilter = 'all';
 let currentPage = 1;
 const PAGE_SIZE = 15;
 
@@ -101,15 +100,15 @@ function getFiltered() {
                 e.desc.toLowerCase().includes(q) ||
                 e.fixes.some(function (f) { return f.toLowerCase().includes(q); });
         });
-        if (searchFilter !== 'all') {
-            list = list.filter(function (e) { return e.cat === searchFilter || e.subcat === searchFilter; });
-        }
         list = list.slice().sort(function (a, b) {
             return scoreError(b, q) - scoreError(a, q);
         });
     } else {
         list = list.filter(function (e) { return e.subcat === currentSubcat; });
-        if (currentSeverity !== 'all') list = list.filter(function (e) { return e.severity === currentSeverity; });
+    }
+    
+    if (currentSeverity !== 'all') {
+        list = list.filter(function (e) { return e.severity === currentSeverity; });
     }
     return list;
 }
@@ -454,16 +453,6 @@ document.querySelectorAll('.footer-cat-link').forEach(function (link) {
         e.preventDefault();
         switchSubcat(link.dataset.subcat, link.dataset.parent);
         $('categories').scrollIntoView({ behavior: 'smooth' });
-    });
-});
-
-document.querySelectorAll('.filter-chip').forEach(function (chip) {
-    chip.addEventListener('click', function () {
-        document.querySelectorAll('.filter-chip').forEach(function (c) { c.classList.remove('active'); });
-        chip.classList.add('active');
-        searchFilter = chip.dataset.filter;
-        currentPage = 1;
-        renderTable();
     });
 });
 
