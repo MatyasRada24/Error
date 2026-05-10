@@ -1492,12 +1492,13 @@ svg {
     padding: 20px;
     opacity: 0;
     pointer-events: none;
-    transition: opacity var(--tr)
+    transition: opacity .25s ease, backdrop-filter .25s ease
 }
 
 .modal-overlay.open {
     opacity: 1;
-    pointer-events: all
+    pointer-events: all;
+    backdrop-filter: blur(18px) saturate(1.4)
 }
 
 .modal {
@@ -1510,13 +1511,18 @@ svg {
     overflow-y: auto;
     padding: 36px;
     position: relative;
-    transform: translateY(28px);
-    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+    transform: scale(.96) translateY(20px);
+    transition: transform .32s cubic-bezier(.34, 1.56, .64, 1), box-shadow .32s ease;
     box-shadow: var(--shadow)
 }
 
 .modal-overlay.open .modal {
-    transform: translateY(0)
+    transform: scale(1) translateY(0);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, .7), 0 0 0 1px var(--border), 0 0 60px var(--accent-glow)
+}
+
+[data-theme="light"] .modal-overlay.open .modal {
+    box-shadow: 0 24px 60px rgba(79, 70, 229, .18), 0 0 0 1px rgba(79, 70, 229, .15)
 }
 
 .modal-close {
@@ -1532,12 +1538,13 @@ svg {
     padding: 7px;
     cursor: pointer;
     color: var(--text2);
-    transition: all var(--tr)
+    transition: color var(--tr), border-color var(--tr), background var(--tr), transform .15s ease
 }
 
 .modal-close:hover {
     color: var(--red);
-    border-color: var(--red)
+    border-color: var(--red);
+    transform: rotate(90deg) scale(1.15)
 }
 
 .modal-badge {
@@ -2142,36 +2149,7 @@ svg {
     }
 }
 
-.modal-overlay {
-    transition: opacity .25s ease, backdrop-filter .25s ease
-}
 
-.modal-overlay.open {
-    backdrop-filter: blur(18px) saturate(1.4)
-}
-
-.modal {
-    transform: scale(.96) translateY(20px);
-    transition: transform .32s cubic-bezier(.34, 1.56, .64, 1), box-shadow .32s ease;
-    box-shadow: var(--shadow)
-}
-
-.modal-overlay.open .modal {
-    transform: scale(1) translateY(0);
-    box-shadow: 0 24px 80px rgba(0, 0, 0, .7), 0 0 0 1px var(--border), 0 0 60px var(--accent-glow)
-}
-
-[data-theme="light"] .modal-overlay.open .modal {
-    box-shadow: 0 24px 60px rgba(79, 70, 229, .18), 0 0 0 1px rgba(79, 70, 229, .15)
-}
-
-.modal-close {
-    transition: color var(--tr), border-color var(--tr), background var(--tr), transform .15s ease
-}
-
-.modal-close:hover {
-    transform: rotate(90deg) scale(1.15)
-}
 
 .empty-state {
     gap: 16px;
@@ -2372,10 +2350,6 @@ mark.hl {
 [data-theme="light"] mark.hl {
     background: rgba(217, 119, 6, .18);
     color: #b45309
-}
-
-.hero-inline-search {
-    position: relative
 }
 
 .hero-inline-search {
