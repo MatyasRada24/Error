@@ -76,19 +76,7 @@
         umami.src = 'https://cloud.umami.is/script.js';
         umami.dataset.websiteId = 'b4fe54d6-ad35-4c15-a989-d698d0bfb313';
         document.head.appendChild(umami);
-
-        var gtm = document.createElement('script');
-        gtm.async = true;
-        gtm.src = 'https://www.googletagmanager.com/gtag/js?id=G-D5CWSS5ZHC';
-        document.head.appendChild(gtm);
-        gtm.onload = function () {
-          window.dataLayer = window.dataLayer || [];
-          function gtag() { dataLayer.push(arguments); }
-          gtag('js', new Date());
-          gtag('config', 'G-D5CWSS5ZHC');
-        };
-
-      });
+      }, 500);
     });
   </script>
 
