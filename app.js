@@ -11,6 +11,20 @@ let searchQuery = '';
 let currentPage = 1;
 const PAGE_SIZE = 15;
 const $ = id => document.getElementById(id);
+let searchTimer;
+
+
+let worker;
+try {
+    worker = new Worker('worker.js');
+} catch(e) {
+    console.warn('Worker failed, using sync fallback', e);
+}
+
+if (worker) {
+    worker.postMessage({ type: 'INIT', payload: { errors: ERRORS } });
+}
+
 
 const tbody = $('error-tbody');
 const emptyState = $('empty-state');
@@ -108,6 +122,32 @@ function getFiltered() {
     }
     return list;
 }
+
+
+function getFilteredAsync() {
+    if (!worker) return Promise.resolve({ pageList: getFiltered().slice((currentPage-1)*PAGE_SIZE, currentPage*PAGE_SIZE), total: getFiltered().length, totalPages: Math.ceil(getFiltered().length/PAGE_SIZE) });
+    
+    return new Promise(resolve => {
+        const handler = (e) => {
+            if (e.data.type === 'FILTER_RESULTS') {
+                worker.removeEventListener('message', handler);
+                resolve(e.data.payload);
+            }
+        };
+        worker.addEventListener('message', handler);
+        worker.postMessage({
+            type: 'FILTER',
+            payload: {
+                searchQuery,
+                currentSubcat,
+                currentSeverity,
+                pageSize: PAGE_SIZE,
+                currentPage
+            }
+        });
+    });
+}
+
 function showSkeletons(count) {
     var cols = 5;
     var html = '';
@@ -130,24 +170,26 @@ function renderTable() {
     var table = $('error-table');
     emptyState.style.display = 'none';
     table.style.display = 'table';
-    _renderRafId = requestAnimationFrame(function () {
-        _renderRafId = null;
-        _renderTableNow();
+    
+    getFilteredAsync().then(results => {
+        _renderRafId = requestAnimationFrame(function () {
+            _renderRafId = null;
+            _renderTableNow(results);
+        });
     });
 }
-function _renderTableNow() {
-    const list = getFiltered();
+
+function _renderTableNow(results) {
+    const { pageList, total, totalPages } = results;
     const table = $('error-table');
     tbody.innerHTML = '';
 
-    const totalPages = list.length > 0 ? Math.ceil(list.length / PAGE_SIZE) : 1;
-    if (currentPage > totalPages) currentPage = totalPages;
-    if (currentPage < 1) currentPage = 1;
-    resultCount.textContent = list.length + ' errors';
+    resultCount.textContent = total + ' errors';
 
-    if (!list.length) {
+    if (!total) {
         table.style.display = 'none';
         renderPagination(0, 0);
+
         if (searchQuery) {
             emptyState.innerHTML =
                 '<svg class="empty-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">' +
@@ -173,9 +215,6 @@ function _renderTableNow() {
     emptyState.style.display = 'none';
     table.style.display = 'table';
 
-    const start = (currentPage - 1) * PAGE_SIZE;
-    const pageList = list.slice(start, start + PAGE_SIZE);
-
     const frag = document.createDocumentFragment();
     pageList.forEach(function (err) {
         const tr = document.createElement('tr');
@@ -190,8 +229,9 @@ function _renderTableNow() {
         frag.appendChild(tr);
     });
     tbody.appendChild(frag);
-    renderPagination(totalPages, list.length);
+    renderPagination(totalPages, total);
 }
+
 
 function renderPagination(totalPages, total) {
     const container = $('pagination');
@@ -466,17 +506,30 @@ function renderDropdown(query) {
         searchDropdown.innerHTML = '';
         return;
     }
-    var q = query.toLowerCase();
-    var allScored = ERRORS
-        .filter(function (e) {
-            return e.code.toLowerCase().includes(q) ||
-                e.name.toLowerCase().includes(q) ||
-                e.desc.toLowerCase().includes(q);
-        })
-        .map(function (e) { return { e: e, s: scoreError(e, q) }; })
-        .sort(function (a, b) { return b.s - a.s; });
-    var scored = allScored.slice(0, 25);
 
+    if (!worker) {
+        // Sync fallback if no worker
+        const q = query.toLowerCase();
+        const scored = ERRORS
+            .filter(e => e.code.toLowerCase().includes(q) || e.name.toLowerCase().includes(q) || e.desc.toLowerCase().includes(q))
+            .map(e => ({ e, s: scoreError(e, q) }))
+            .sort((a, b) => b.s - a.s)
+            .slice(0, 25);
+        _renderDropdownUI(scored, scored.length, q);
+        return;
+    }
+
+    const handler = (e) => {
+        if (e.data.type === 'DROPDOWN_RESULTS') {
+            worker.removeEventListener('message', handler);
+            _renderDropdownUI(e.data.payload.results, e.data.payload.total, e.data.payload.query);
+        }
+    };
+    worker.addEventListener('message', handler);
+    worker.postMessage({ type: 'DROPDOWN', payload: { query } });
+}
+
+function _renderDropdownUI(scored, totalCount, q) {
     if (!scored.length) {
         searchDropdown.style.display = 'none';
         searchDropdown.innerHTML = '';
@@ -484,9 +537,9 @@ function renderDropdown(query) {
     }
 
     var countLabel = '<div class="sd-header">' +
-        (allScored.length > 25
-            ? 'Top 25 of ' + allScored.length + ' results'
-            : allScored.length + ' result' + (allScored.length !== 1 ? 's' : '')) +
+        (totalCount > 25
+            ? 'Top 25 of ' + totalCount + ' results'
+            : totalCount + ' result' + (totalCount !== 1 ? 's' : '')) +
         ' &mdash; scroll for more' +
         '</div>';
 
@@ -506,6 +559,7 @@ function renderDropdown(query) {
     searchDropdown.innerHTML = html;
     searchDropdown.style.display = 'block';
 
+
     searchDropdown.querySelectorAll('.sd-item').forEach(function (item) {
         item.addEventListener('mousedown', function (ev) {
             ev.preventDefault();
@@ -519,8 +573,12 @@ function renderDropdown(query) {
                 searchClear.style.display = 'block';
                 currentPage = 1;
                 searchResultsInfo.style.display = 'block';
-                searchResultsInfo.textContent = 'Found ' + getFiltered().length + ' results for "' + err.code + '"';
-                renderTable();
+                getFilteredAsync().then(results => {
+                    searchResultsInfo.style.display = 'block';
+                    searchResultsInfo.textContent = 'Found ' + results.total + ' results for "' + err.code + '"';
+                    renderTable();
+                });
+
                 openModal(err);
             }
         });
@@ -565,7 +623,6 @@ searchDropdown.addEventListener('keydown', function (e) {
         items[idx].dispatchEvent(new MouseEvent('mousedown'));
     }
 });
-var searchTimer;
 globalSearch.addEventListener('input', function () {
     clearTimeout(searchTimer);
     var rawVal = globalSearch.value.trim();
@@ -574,16 +631,23 @@ globalSearch.addEventListener('input', function () {
         searchQuery = rawVal;
         currentPage = 1;
         searchClear.style.display = searchQuery ? 'block' : 'none';
+        
         if (searchQuery) {
-            var filteredLen = getFiltered().length;
-            searchResultsInfo.style.display = 'block';
-            searchResultsInfo.textContent = 'Found ' + filteredLen + ' results for "' + searchQuery + '"';
+            // We need the filtered length for the UI message, so we call getFilteredAsync or equivalent
+            getFilteredAsync().then(results => {
+                searchResultsInfo.style.display = 'block';
+                searchResultsInfo.textContent = 'Found ' + results.total + ' results for "' + searchQuery + '"';
+                // No need to call renderTable here because it was handled inside the timer or is redundant?
+                // Actually, renderTable() should be called to update the main view.
+                renderTable();
+            });
         } else {
             searchResultsInfo.style.display = 'none';
+            renderTable();
         }
-        renderTable();
     }, 200);
 });
+
 
 searchClear.addEventListener('click', function () {
     globalSearch.value = '';
