@@ -186,11 +186,11 @@ function _renderTableNow() {
         const tr = document.createElement('tr');
         const descShort = err.desc.length > 90 ? err.desc.substring(0, 90) + '...' : err.desc;
         const fixText = err.fixes[0] || '-';
-        tr.innerHTML = '<td><span class="code-cell">' + err.code + '</span></td>' +
-            '<td><strong>' + err.name + '</strong></td>' +
+        tr.innerHTML = '<td><span class="code-cell">' + escHtml(err.code) + '</span></td>' +
+            '<td><strong>' + escHtml(err.name) + '</strong></td>' +
             '<td><span class="severity-badge ' + SEV_CSS[err.severity] + '">' + SEV_LABEL[err.severity] + '</span></td>' +
-            '<td style="max-width:280px;font-size:.84rem;">' + descShort + '</td>' +
-            '<td><span class="fix-preview">' + fixText + '</span></td>';
+            '<td style="max-width:280px;font-size:.84rem;">' + escHtml(descShort) + '</td>' +
+            '<td><span class="fix-preview">' + escHtml(fixText) + '</span></td>';
         tr.addEventListener('click', (function (e) { return function () { openModal(e); }; })(err));
         frag.appendChild(tr);
     });
@@ -533,9 +533,7 @@ function renderDropdown(query) {
     });
 }
 
-function escHtml(s) {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
+
 
 document.addEventListener('click', function (e) {
     if (!searchDropdown.contains(e.target) && e.target !== globalSearch) {
@@ -836,16 +834,16 @@ function renderTrendingCards() {
         card.innerHTML =
             '<div class="hcard-top">' +
             '<span class="hcard-badge ' + (isHW ? 'hw' : 'sw') + '">' + (isHW ? 'Hardware' : 'Software') + '</span>' +
-            '<span class="hcard-subcat">' + subcatLabel + '</span>' +
+            '<span class="hcard-subcat">' + escHtml(subcatLabel) + '</span>' +
             '</div>' +
             '<div class="hcard-body">' +
-            '<div class="hcard-title">' + err.name + '</div>' +
-            '<div class="hcard-desc-box"><strong>General Description:</strong> ' + descShort + '</div>' +
+            '<div class="hcard-title">' + escHtml(err.name) + '</div>' +
+            '<div class="hcard-desc-box"><strong>General Description:</strong> ' + escHtml(descShort) + '</div>' +
             '<div class="hcard-tags">' +
             '<span class="hcard-tag severity-badge ' + SEV_CSS[err.severity] + '">' + SEV_LABEL[err.severity] + '</span>' +
-            '<span class="hcard-tag">' + err.code + '</span>' +
+            '<span class="hcard-tag">' + escHtml(err.code) + '</span>' +
             '</div>' +
-            (fixShort ? '<div class="hcard-solution"><div class="hcard-solution-title">&#128295; Possible solution:</div><div class="hcard-solution-text">' + fixShort + '</div></div>' : '') +
+            (fixShort ? '<div class="hcard-solution"><div class="hcard-solution-title">&#128295; Possible solution:</div><div class="hcard-solution-text">' + escHtml(fixShort) + '</div></div>' : '') +
             '</div>' +
             '<div class="hcard-footer">' +
             '<button class="hcard-btn">View detailed solution &#8594;</button>' +
