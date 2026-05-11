@@ -52,9 +52,20 @@
     Header always set Cross-Origin-Resource-Policy "same-origin"
 
     # Vary headers pro správné cachování
-    <FilesMatch "\.(js|css|html|json)$">
+    <FilesMatch "\.(js|css|html|json|xml)$">
         Header append Vary Accept-Encoding
     </FilesMatch>
+</IfModule>
+
+# ============================================================
+# MIME TYPES
+# ============================================================
+<IfModule mod_mime.c>
+    AddType application/xml .xml
+    AddType text/xml .xml
+    AddType application/json .json
+    AddType image/svg+xml .svg
+    AddType image/webp .webp
 </IfModule>
 
 # ============================================================
@@ -160,10 +171,6 @@ Options -Indexes
 
     # Kategorie zkratky: /cpu → /#cpu (pro SEO deep-links)
     RewriteRule ^(cpu|gpu|ram|storage|mobo|psu|bios|network|windows|drivers|directx|runtime|sw-bios)/?$ /?cat=$1 [L,R=301]
-
-    # Error pages (extensionless HTML)
-    RewriteCond %{DOCUMENT_ROOT}/error/$1.html -f
-    RewriteRule ^error/([^/]+)/?$ /error/$1.html [L]
 </IfModule>
 
 # ============================================================
