@@ -1,0 +1,52 @@
+# ============================================================
+# ErrorFixer – robots.txt v2
+# https://errorsfixer.com/
+# ============================================================
+
+# ===== Všichni roboti =====
+User-agent: *
+Allow: /
+Allow: /?q=
+Allow: /?cat=
+
+# Blokování citlivých/interních souborů
+Disallow: /.htaccess
+Disallow: /.env
+Disallow: /.git/
+Disallow: /add_more_errors.py
+Disallow: /fix_data.py
+Disallow: /fix_data.js
+Disallow: /CNAME.txt
+Disallow: /*.ps1$
+Disallow: /data.js.map
+
+# Blokování zbytečných duplikátních URL (šetří crawl budget)
+Disallow: /?type=all
+Disallow: /*&type=all
+Disallow: /?lang=*
+
+# ===== Googlebot – plný přístup =====
+User-agent: Googlebot
+Allow: /
+Allow: /?q=
+Allow: /?cat=
+
+# ===== Bingbot – omezená rychlost =====
+User-agent: Bingbot
+Crawl-delay: 1
+
+# ===== Blokování špatných scraperů =====
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# ===== Sitemap =====
+Sitemap: https://errorsfixer.com/sitemap.xml
