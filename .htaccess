@@ -169,6 +169,9 @@ Options -Indexes
     # Vyhledávací zkratky: /search/QUERY → /?q=QUERY
     RewriteRule ^search/(.+)$ /?q=$1 [L,R=301,NE]
 
+    # Individuální errory: /error/KOD → index.html (SPA routing)
+    RewriteRule ^error/([^/]+)/?$ /index.html [L,QSA]
+
     # Kategorie zkratky: /cpu → /#cpu (pro SEO deep-links)
     RewriteRule ^(cpu|gpu|ram|storage|mobo|psu|bios|network|windows|drivers|directx|runtime|sw-bios)/?$ /?cat=$1 [L,R=301]
 </IfModule>
