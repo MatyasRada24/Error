@@ -17,8 +17,14 @@ let searchTimer;
 let worker;
 try {
     worker = new Worker('worker.js');
+    worker.onerror = function() {
+        console.warn('Worker load failed, disabling worker');
+        worker = null;
+        renderTable();
+    };
 } catch (e) {
     console.warn('Worker failed, using sync fallback', e);
+    worker = null;
 }
 
 if (worker) {
@@ -833,8 +839,8 @@ document.addEventListener('DOMContentLoaded', function () {
     renderTrendingCards();
     var params = new URLSearchParams(window.location.search);
     var codeParam = params.get('code');
-    var isCleanUrl = window.location.pathname.includes('/error/');
-    var cleanCode = isCleanUrl ? window.location.pathname.split('/error/')[1] : null;
+    var isCleanUrl = window.location.pathname.match(/\/error\/([^/]+)$/);
+    var cleanCode = isCleanUrl ? isCleanUrl[1].replace(/\.html$/, '') : null;
     if (cleanCode) cleanCode = decodeURIComponent(cleanCode);
     var finalCode = codeParam || cleanCode;
 
@@ -851,8 +857,8 @@ document.addEventListener('DOMContentLoaded', function () {
 window.addEventListener('popstate', function (e) {
     var params = new URLSearchParams(window.location.search);
     var codeParam = params.get('code');
-    var isCleanUrl = window.location.pathname.includes('/error/');
-    var cleanCode = isCleanUrl ? window.location.pathname.split('/error/')[1] : null;
+    var isCleanUrl = window.location.pathname.match(/\/error\/([^/]+)$/);
+    var cleanCode = isCleanUrl ? isCleanUrl[1].replace(/\.html$/, '') : null;
     if (cleanCode) cleanCode = decodeURIComponent(cleanCode);
     var finalCode = codeParam || cleanCode;
 
