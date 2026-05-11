@@ -17,14 +17,8 @@ let searchTimer;
 let worker;
 try {
     worker = new Worker('worker.js');
-    worker.onerror = function() {
-        console.warn('Worker load failed, disabling worker');
-        worker = null;
-        renderTable();
-    };
-} catch (e) {
+} catch(e) {
     console.warn('Worker failed, using sync fallback', e);
-    worker = null;
 }
 
 if (worker) {
@@ -122,7 +116,7 @@ function getFiltered() {
     } else {
         list = list.filter(function (e) { return e.subcat === currentSubcat; });
     }
-
+    
     if (currentSeverity !== 'all') {
         list = list.filter(function (e) { return e.severity === currentSeverity; });
     }
@@ -131,8 +125,8 @@ function getFiltered() {
 
 
 function getFilteredAsync() {
-    if (!worker) return Promise.resolve({ pageList: getFiltered().slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE), total: getFiltered().length, totalPages: Math.ceil(getFiltered().length / PAGE_SIZE) });
-
+    if (!worker) return Promise.resolve({ pageList: getFiltered().slice((currentPage-1)*PAGE_SIZE, currentPage*PAGE_SIZE), total: getFiltered().length, totalPages: Math.ceil(getFiltered().length/PAGE_SIZE) });
+    
     return new Promise(resolve => {
         const handler = (e) => {
             if (e.data.type === 'FILTER_RESULTS') {
@@ -176,7 +170,7 @@ function renderTable() {
     var table = $('error-table');
     emptyState.style.display = 'none';
     table.style.display = 'table';
-
+    
     getFilteredAsync().then(results => {
         _renderRafId = requestAnimationFrame(function () {
             _renderRafId = null;
@@ -347,6 +341,7 @@ function openModal(err) {
     sev.className = 'modal-severity severity-badge ' + SEV_CSS[err.severity];
     $('modal-cat').textContent = err.id;
 
+    // Windows version tag
     var winTagEl = $('modal-win-ver');
     if (err.winver && WIN_VER_LABEL[err.winver]) {
         winTagEl.textContent = '\uD83D\uDDA5\uFE0F ' + WIN_VER_LABEL[err.winver];
@@ -438,16 +433,10 @@ function openModal(err) {
 }
 
 function closeModal() {
-    if (window.PRELOAD_ERROR) {
-        window.location.href = '../index.html';
-        return;
-    }
     modalOverlay.classList.remove('open');
     document.body.style.overflow = '';
-    if (window.location.pathname.includes('/error/')) {
+    if (window.location.pathname.includes('/error/') || window.location.search.includes('code=')) {
         window.history.pushState(null, '', '/');
-    } else if (window.location.search.includes('code=')) {
-        window.history.pushState(null, '', window.location.pathname);
     }
 }
 
@@ -642,7 +631,7 @@ globalSearch.addEventListener('input', function () {
         searchQuery = rawVal;
         currentPage = 1;
         searchClear.style.display = searchQuery ? 'block' : 'none';
-
+        
         if (searchQuery) {
             // We need the filtered length for the UI message, so we call getFilteredAsync or equivalent
             getFilteredAsync().then(results => {
@@ -837,33 +826,33 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(initParticles, 100);
     observeCounters('#stats');
     renderTrendingCards();
-    var params = new URLSearchParams(window.location.search);
-    var codeParam = params.get('code');
-    var isCleanUrl = window.location.pathname.match(/\/error\/([^/]+)$/);
-    var cleanCode = isCleanUrl ? isCleanUrl[1].replace(/\.html$/, '') : null;
-    if (cleanCode) cleanCode = decodeURIComponent(cleanCode);
-    var finalCode = codeParam || cleanCode;
-
-    if (window.PRELOAD_ERROR) {
-        openModal(window.PRELOAD_ERROR);
-    } else if (finalCode) {
-        var err = ERRORS.find(function (e) { return e.code === finalCode; });
-        if (err) {
-            openModal(err);
+    function checkUrlForError() {
+        var path = window.location.pathname;
+        var code = null;
+        if (path.includes('/error/')) {
+            code = decodeURIComponent(path.split('/error/')[1].split('?')[0].split('#')[0]);
+        } else {
+            code = new URLSearchParams(window.location.search).get('code');
+        }
+        if (code) {
+            var err = ERRORS.find(function (e) { return e.code === code || e.id === code; });
+            if (err) openModal(err);
         }
     }
+    checkUrlForError();
 });
 
 window.addEventListener('popstate', function (e) {
-    var params = new URLSearchParams(window.location.search);
-    var codeParam = params.get('code');
-    var isCleanUrl = window.location.pathname.match(/\/error\/([^/]+)$/);
-    var cleanCode = isCleanUrl ? isCleanUrl[1].replace(/\.html$/, '') : null;
-    if (cleanCode) cleanCode = decodeURIComponent(cleanCode);
-    var finalCode = codeParam || cleanCode;
-
-    if (finalCode) {
-        var err = ERRORS.find(function (er) { return er.code === finalCode; });
+    var path = window.location.pathname;
+    var code = null;
+    if (path.includes('/error/')) {
+        code = decodeURIComponent(path.split('/error/')[1].split('?')[0].split('#')[0]);
+    } else {
+        code = new URLSearchParams(window.location.search).get('code');
+    }
+    
+    if (code) {
+        var err = ERRORS.find(function (er) { return er.code === code || er.id === code; });
         if (err) openModal(err);
     } else {
         closeModal();
