@@ -430,6 +430,18 @@ function openModal(err) {
     if (!window.history.state || window.history.state.code !== err.code) {
         window.history.pushState({ code: err.code }, '', '/error/' + encodeURIComponent(err.code));
     }
+    document.title = err.code + ': ' + err.name + ' | ErrorFixer';
+    updateCanonical('https://errorsfixer.com/error/' + encodeURIComponent(err.code));
+}
+
+function updateCanonical(url) {
+    var link = document.querySelector('link[rel="canonical"]');
+    if (!link) {
+        link = document.createElement('link');
+        link.rel = 'canonical';
+        document.head.appendChild(link);
+    }
+    link.href = url;
 }
 
 function closeModal() {
@@ -438,6 +450,8 @@ function closeModal() {
     if (window.location.pathname.includes('/error/') || window.location.search.includes('code=')) {
         window.history.pushState(null, '', '/');
     }
+    document.title = 'ErrorFixer - PC Error Database | BSOD, CPU, GPU, BIOS, Windows';
+    updateCanonical('https://errorsfixer.com/');
 }
 
 function switchSubcat(subcat, parent) {
