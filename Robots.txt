@@ -1,52 +1,124 @@
-# ============================================================
-# ErrorFixer – robots.txt v2
-# https://errorsfixer.com/
-# ============================================================
+<IfModule mod_rewrite.c>
+    RewriteEngine On
 
-# ===== Všichni roboti =====
-User-agent: *
-Allow: /
-Allow: /?q=
-Allow: /?cat=
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# Blokování citlivých/interních souborů
-Disallow: /.htaccess
-Disallow: /.env
-Disallow: /.git/
-Disallow: /add_more_errors.py
-Disallow: /fix_data.py
-Disallow: /fix_data.js
-Disallow: /CNAME.txt
-Disallow: /*.ps1$
-Disallow: /data.js.map
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+</IfModule>
 
-# Blokování zbytečných duplikátních URL (šetří crawl budget)
-Disallow: /?type=all
-Disallow: /*&type=all
-Disallow: /?lang=*
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), interest-cohort=()"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none';"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    
+    Header unset Server
+    Header unset X-Powered-By
 
-# ===== Googlebot – plný přístup =====
-User-agent: Googlebot
-Allow: /
-Allow: /?q=
-Allow: /?cat=
+    Header always set Cross-Origin-Opener-Policy "same-origin"
+    Header always set Cross-Origin-Embedder-Policy "require-corp"
+    Header always set Cross-Origin-Resource-Policy "same-origin"
 
-# ===== Bingbot – omezená rychlost =====
-User-agent: Bingbot
-Crawl-delay: 1
+    <FilesMatch "\.(js|css|html|json|xml)$">
+        Header append Vary Accept-Encoding
+    </FilesMatch>
+</IfModule>
 
-# ===== Blokování špatných scraperů =====
-User-agent: SemrushBot
-Crawl-delay: 10
+<IfModule mod_mime.c>
+    AddType application/xml .xml
+    AddType text/xml .xml
+    AddType application/json .json
+    AddType image/svg+xml .svg
+    AddType image/webp .webp
+</IfModule>
 
-User-agent: AhrefsBot
-Disallow: /
+<IfModule mod_brotli.c>
+    AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/javascript application/javascript application/x-javascript application/json application/xml text/xml image/svg+xml
+    BrotliCompressionQuality 6
+</IfModule>
 
-User-agent: MJ12bot
-Disallow: /
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/x-javascript application/json application/xml text/xml image/svg+xml
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+</IfModule>
 
-User-agent: DotBot
-Disallow: /
+<IfModule mod_headers.c>
+    <FilesMatch "\.(js|css)$">
+        Header set Cache-Control "public, max-age=2592000, stale-while-revalidate=86400"
+    </FilesMatch>
 
-# ===== Sitemap =====
-Sitemap: https://errorsfixer.com/sitemap.xml
+    <FilesMatch "\.(png|jpg|jpeg|gif|webp|svg|ico)$">
+        Header set Cache-Control "public, max-age=15552000, immutable"
+    </FilesMatch>
+
+    <FilesMatch "\.(woff2|woff|ttf|eot)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    <FilesMatch "\.html$">
+        Header set Cache-Control "public, max-age=3600, must-revalidate"
+    </FilesMatch>
+
+    <FilesMatch "\.(xml|json)$">
+        Header set Cache-Control "public, max-age=86400"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault                          "access plus 1 month"
+    ExpiresByType text/html                 "access plus 1 hour"
+    ExpiresByType text/css                  "access plus 1 year"
+    ExpiresByType application/javascript    "access plus 1 year"
+    ExpiresByType application/x-javascript "access plus 1 year"
+    ExpiresByType image/webp                "access plus 6 months"
+    ExpiresByType image/png                 "access plus 6 months"
+    ExpiresByType image/jpeg                "access plus 6 months"
+    ExpiresByType image/x-icon              "access plus 1 year"
+    ExpiresByType image/svg+xml             "access plus 6 months"
+    ExpiresByType font/woff2                "access plus 1 year"
+    ExpiresByType application/xml           "access plus 1 day"
+    ExpiresByType text/xml                  "access plus 1 day"
+</IfModule>
+
+FileETag MTime Size
+Options -Indexes
+
+<FilesMatch "(\.htaccess|\.htpasswd|\.env|\.git|package\.json|composer\.json|split\.ps1|generate\.js|generate\.ps1|add_more_errors\.py|fix_data\.py|fix_data\.js|data\.js\.map|CNAME\.txt)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteRule ^\.git - [F,L]
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule ^search/(.+)$ /?q=$1 [L,R=301,NE]
+    RewriteRule ^error/([^/]+)/?$ /index.html [L,QSA]
+    RewriteRule ^(cpu|gpu|ram|storage|mobo|psu|bios|network|windows|drivers|directx|runtime|sw-bios)/?$ /?cat=$1 [L,R=301]
+</IfModule>
+
+ErrorDocument 404 /index.html
+ErrorDocument 403 /index.html
+ErrorDocument 500 /index.html
+
+<FilesMatch "^index\.html$">
+    Header add Link "</style.css>; rel=preload; as=style"
+    Header add Link "</data.js>; rel=preload; as=script"
+    Header add Link "</app.js>; rel=preload; as=script"
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP_USER_AGENT} (libwww-perl|wget|python|nikto|sqlmap|dirbuster|nmap|masscan) [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
