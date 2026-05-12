@@ -1,65 +1,34 @@
-# ============================================================
-# ErrorFixer – .htaccess | Security + Performance + SEO v4
-# ============================================================
-
-# ============================================================
-# HTTPS + WWW REDIRECTS
-# ============================================================
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # 1. Force HTTPS
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-    # 2. Remove www (canonical non-www)
     RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
     RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
 </IfModule>
 
-# ============================================================
-# SECURITY HEADERS
-# ============================================================
 <IfModule mod_headers.c>
-    # Prevent clickjacking
     Header always set X-Frame-Options "SAMEORIGIN"
-
-    # Prevent MIME sniffing
     Header always set X-Content-Type-Options "nosniff"
-
-    # XSS protection (legacy browsers)
     Header always set X-XSS-Protection "1; mode=block"
-
-    # Referrer policy
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
-
-    # Permissions policy – zakáže nepoužívané funkce prohlížeče
     Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), interest-cohort=()"
-
-    # Content Security Policy
     Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none';"
-
-    # HSTS – 1 rok, subdomény, preload (aktivuj až po ověření SSL)
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-
-    # Skryj informace o serveru
+    
     Header unset Server
     Header unset X-Powered-By
 
-    # Cross-Origin policies
     Header always set Cross-Origin-Opener-Policy "same-origin"
     Header always set Cross-Origin-Embedder-Policy "require-corp"
     Header always set Cross-Origin-Resource-Policy "same-origin"
 
-    # Vary headers pro správné cachování
     <FilesMatch "\.(js|css|html|json|xml)$">
         Header append Vary Accept-Encoding
     </FilesMatch>
 </IfModule>
 
-# ============================================================
-# MIME TYPES
-# ============================================================
 <IfModule mod_mime.c>
     AddType application/xml .xml
     AddType text/xml .xml
@@ -68,17 +37,11 @@
     AddType image/webp .webp
 </IfModule>
 
-# ============================================================
-# BROTLI COMPRESSION (mod_brotli – Apache 2.4.26+)
-# ============================================================
 <IfModule mod_brotli.c>
     AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/javascript application/javascript application/x-javascript application/json application/xml text/xml image/svg+xml
     BrotliCompressionQuality 6
 </IfModule>
 
-# ============================================================
-# GZIP COMPRESSION FALLBACK (mod_deflate)
-# ============================================================
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/x-javascript application/json application/xml text/xml image/svg+xml
     BrowserMatch ^Mozilla/4 gzip-only-text/html
@@ -86,39 +49,28 @@
     BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
 </IfModule>
 
-# ============================================================
-# CACHE-CONTROL HEADERS
-# ============================================================
 <IfModule mod_headers.c>
-    # JS/CSS – 30 dní (cache-busted via ?v= nebo hash)
     <FilesMatch "\.(js|css)$">
         Header set Cache-Control "public, max-age=2592000, stale-while-revalidate=86400"
     </FilesMatch>
 
-    # Obrázky – 6 měsíců, immutable
     <FilesMatch "\.(png|jpg|jpeg|gif|webp|svg|ico)$">
         Header set Cache-Control "public, max-age=15552000, immutable"
     </FilesMatch>
 
-    # Fonty – 1 rok, immutable
     <FilesMatch "\.(woff2|woff|ttf|eot)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
 
-    # HTML – 1 hodina, pak revalidace
     <FilesMatch "\.html$">
         Header set Cache-Control "public, max-age=3600, must-revalidate"
     </FilesMatch>
 
-    # XML sitemap + JSON – 24 hodin
     <FilesMatch "\.(xml|json)$">
         Header set Cache-Control "public, max-age=86400"
     </FilesMatch>
 </IfModule>
 
-# ============================================================
-# BROWSER CACHING (mod_expires)
-# ============================================================
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresDefault                          "access plus 1 month"
@@ -136,66 +88,36 @@
     ExpiresByType text/xml                  "access plus 1 day"
 </IfModule>
 
-# ============================================================
-# ETAGS (pro konzistentní cachování)
-# ============================================================
 FileETag MTime Size
-
-# ============================================================
-# ZAKÁZÁNÍ DIRECTORY LISTINGU
-# ============================================================
 Options -Indexes
 
-# ============================================================
-# OCHRANA CITLIVÝCH SOUBORŮ
-# ============================================================
 <FilesMatch "(\.htaccess|\.htpasswd|\.env|\.git|package\.json|composer\.json|split\.ps1|generate\.js|generate\.ps1|add_more_errors\.py|fix_data\.py|fix_data\.js|data\.js\.map|CNAME\.txt)$">
     Order Allow,Deny
     Deny from all
 </FilesMatch>
 
-# Zakáže přístup k .git adresáři
 <IfModule mod_rewrite.c>
     RewriteRule ^\.git - [F,L]
 </IfModule>
 
-# ============================================================
-# SEO: CLEAN URLS + ROUTING
-# ============================================================
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
-
-    # Vyhledávací zkratky: /search/QUERY → /?q=QUERY
     RewriteRule ^search/(.+)$ /?q=$1 [L,R=301,NE]
-
-    # Individuální errory: /error/KOD → index.html (SPA routing)
     RewriteRule ^error/([^/]+)/?$ /index.html [L,QSA]
-
-    # Kategorie zkratky: /cpu → /#cpu (pro SEO deep-links)
     RewriteRule ^(cpu|gpu|ram|storage|mobo|psu|bios|network|windows|drivers|directx|runtime|sw-bios)/?$ /?cat=$1 [L,R=301]
 </IfModule>
 
-# ============================================================
-# CUSTOM ERROR DOCUMENTS
-# ============================================================
 ErrorDocument 404 /index.html
 ErrorDocument 403 /index.html
 ErrorDocument 500 /index.html
 
-# ============================================================
-# HTTP/2 SERVER PUSH (Link headers)
-# Pushuje kritické zdroje při načtení homepage
-# ============================================================
 <FilesMatch "^index\.html$">
     Header add Link "</style.css>; rel=preload; as=style"
     Header add Link "</data.js>; rel=preload; as=script"
     Header add Link "</app.js>; rel=preload; as=script"
 </FilesMatch>
 
-# ============================================================
-# BLOKOVÁNÍ ŠPATNÝCH BOTŮ
-# ============================================================
 <IfModule mod_rewrite.c>
     RewriteCond %{HTTP_USER_AGENT} (libwww-perl|wget|python|nikto|sqlmap|dirbuster|nmap|masscan) [NC]
     RewriteRule .* - [F,L]
