@@ -17,11 +17,15 @@ let searchTimer;
 let worker;
 try {
     worker = new Worker('worker.js');
-} catch(e) {
+} catch (e) {
     console.warn('Worker failed, using sync fallback', e);
 }
 
 if (worker) {
+    worker.onerror = function (e) {
+        console.warn('Worker failed to load or crashed, using sync fallback', e);
+        worker = null;
+    };
     worker.postMessage({ type: 'INIT', payload: { errors: ERRORS } });
 }
 
@@ -116,7 +120,7 @@ function getFiltered() {
     } else {
         list = list.filter(function (e) { return e.subcat === currentSubcat; });
     }
-    
+
     if (currentSeverity !== 'all') {
         list = list.filter(function (e) { return e.severity === currentSeverity; });
     }
@@ -125,11 +129,27 @@ function getFiltered() {
 
 
 function getFilteredAsync() {
-    if (!worker) return Promise.resolve({ pageList: getFiltered().slice((currentPage-1)*PAGE_SIZE, currentPage*PAGE_SIZE), total: getFiltered().length, totalPages: Math.ceil(getFiltered().length/PAGE_SIZE) });
-    
+    if (!worker) return Promise.resolve({
+        pageList: getFiltered().slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+        total: getFiltered().length,
+        totalPages: Math.ceil(getFiltered().length / PAGE_SIZE)
+    });
+
     return new Promise(resolve => {
+        const timeout = setTimeout(() => {
+            console.warn('Worker timed out, using sync fallback');
+            // Do not nullify worker here to allow it to recover if it's just slow, 
+            // but for this request we use the fallback.
+            resolve({
+                pageList: getFiltered().slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+                total: getFiltered().length,
+                totalPages: Math.ceil(getFiltered().length / PAGE_SIZE)
+            });
+        }, 1000);
+
         const handler = (e) => {
             if (e.data.type === 'FILTER_RESULTS') {
+                clearTimeout(timeout);
                 worker.removeEventListener('message', handler);
                 resolve(e.data.payload);
             }
@@ -170,7 +190,7 @@ function renderTable() {
     var table = $('error-table');
     emptyState.style.display = 'none';
     table.style.display = 'table';
-    
+
     getFilteredAsync().then(results => {
         _renderRafId = requestAnimationFrame(function () {
             _renderRafId = null;
@@ -645,7 +665,7 @@ globalSearch.addEventListener('input', function () {
         searchQuery = rawVal;
         currentPage = 1;
         searchClear.style.display = searchQuery ? 'block' : 'none';
-        
+
         if (searchQuery) {
             // We need the filtered length for the UI message, so we call getFilteredAsync or equivalent
             getFilteredAsync().then(results => {
@@ -762,6 +782,13 @@ $('hamburger').addEventListener('click', function () {
     $('main-nav').classList.toggle('mobile-open');
 });
 
+// Close mobile menu when a link is clicked
+$('main-nav').addEventListener('click', function (e) {
+    if (e.target.classList.contains('nav-link')) {
+        $('main-nav').classList.remove('mobile-open');
+    }
+});
+
 function animateCounter(el, target, dur) {
     dur = dur || 1400;
     var step = target / (dur / 16);
@@ -864,7 +891,7 @@ window.addEventListener('popstate', function (e) {
     } else {
         code = new URLSearchParams(window.location.search).get('code');
     }
-    
+
     if (code) {
         var err = ERRORS.find(function (er) { return er.code === code || er.id === code; });
         if (err) openModal(err);
