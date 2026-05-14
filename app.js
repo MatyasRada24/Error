@@ -861,9 +861,28 @@ document.addEventListener('DOMContentLoaded', function () {
         if (label.indexOf('GPU') !== -1) { var v2 = ERRORS.filter(function (e) { return e.subcat === 'gpu'; }).length; el.dataset.target = v2; el.textContent = v2; }
     });
 
+    function updateCanonical() {
+        var canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) {
+            canonical = document.createElement('link');
+            canonical.rel = 'canonical';
+            document.head.appendChild(canonical);
+        }
+        var url = new URL('https://errorsfixer.com/');
+        var params = new URLSearchParams(window.location.search);
+        var q = params.get('q');
+        var cat = params.get('cat');
+        
+        if (q) url.searchParams.set('q', q);
+        if (cat) url.searchParams.set('cat', cat);
+        
+        canonical.href = url.toString();
+    }
+    
     updateCounts();
     updateHeader();
     renderTable();
+    updateCanonical();
     setTimeout(initParticles, 100);
     observeCounters('#stats');
     renderTrendingCards();
