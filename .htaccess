@@ -103,6 +103,12 @@ Options -Indexes
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
+    
+    # Redirect /guides/xxx.html to /guides/xxx
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /guides/([^.]+)\.html\ HTTP
+    RewriteRule ^guides/(.+)\.html$ /guides/$1 [R=301,L]
+    
+    
     RewriteRule ^search/(.+)$ /?q=$1 [L,R=301,NE]
     RewriteRule ^error/([^/]+)/?$ /index.html [L,QSA]
     RewriteRule ^(cpu|gpu|ram|storage|mobo|psu|bios|network|windows|drivers|directx|runtime|sw-bios)/?$ /?cat=$1 [L,R=301]
