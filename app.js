@@ -138,8 +138,6 @@ function getFilteredAsync() {
     return new Promise(resolve => {
         const timeout = setTimeout(() => {
             console.warn('Worker timed out, using sync fallback');
-            // Do not nullify worker here to allow it to recover if it's just slow, 
-            // but for this request we use the fallback.
             resolve({
                 pageList: getFiltered().slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
                 total: getFiltered().length,
@@ -361,7 +359,6 @@ function openModal(err) {
     sev.className = 'modal-severity severity-badge ' + SEV_CSS[err.severity];
     $('modal-cat').textContent = err.id;
 
-    // Windows version tag
     var winTagEl = $('modal-win-ver');
     if (err.winver && WIN_VER_LABEL[err.winver]) {
         winTagEl.textContent = '\uD83D\uDDA5\uFE0F ' + WIN_VER_LABEL[err.winver];
@@ -450,8 +447,7 @@ function openModal(err) {
     if (!window.history.state || window.history.state.code !== err.code) {
         window.history.pushState({ code: err.code }, '', '/error/' + encodeURIComponent(err.code));
     }
-    document.title = err.code + ': ' + err.name + ' | ErrorFixer';
-    updateCanonical('https://errorsfixer.com/error/' + encodeURIComponent(err.code));
+    updateSEOMeta(err);
 }
 
 function updateCanonical(url) {
@@ -464,14 +460,118 @@ function updateCanonical(url) {
     link.href = url;
 }
 
+var SEO_DEFAULTS = {
+    title: 'ErrorFixer - PC Error Database | BSOD, CPU, GPU, BIOS, Windows',
+    description: 'ErrorFixer - a comprehensive database of 300+ PC error codes. Fix BSODs, GPU crashes, CPU faults, DirectX, BIOS problems, and Windows errors step-by-step.',
+    keywords: 'PC error codes, BSOD fix, WHEA error, nvlddmkm, DPC_WATCHDOG_VIOLATION, IRQL_NOT_LESS_OR_EQUAL, CPU error, GPU error code 43, BIOS error, Windows blue screen, DirectX error, DXGI error, RAM error, SSD error, SMART error',
+    canonical: 'https://errorsfixer.com/',
+    ogTitle: 'ErrorFixer - Database of 300+ PC Error Codes',
+    ogDesc: 'Find and fix error codes for CPU, GPU, RAM, BIOS, DirectX, and Windows. 300+ errors with detailed step-by-step guides.',
+    ogUrl: 'https://errorsfixer.com/'
+};
+
+function setMeta(name, content, prop) {
+    var sel = prop ? 'meta[property="' + name + '"]' : 'meta[name="' + name + '"]';
+    var el = document.querySelector(sel);
+    if (el) el.setAttribute('content', content);
+}
+
+function updateSEOMeta(err) {
+    var url = 'https://errorsfixer.com/error/' + encodeURIComponent(err.code);
+    var title = err.code + ': ' + err.name + ' — Fix & Solution | ErrorFixer';
+    var desc = 'How to fix ' + err.code + ': ' + err.desc.substring(0, 140) +
+        ' Causes: ' + err.causes.slice(0, 2).join(', ') + '. Fix: ' + err.fixes[0] + '.';
+    var keywords = err.code + ', ' + err.name + ', fix ' + err.code + ', ' +
+        err.causes.slice(0, 3).join(', ') + ', ' + (SUBCATS[err.subcat] ? SUBCATS[err.subcat].label : err.subcat) + ' error';
+
+    /* Basic */
+    document.title = title;
+    setMeta('description', desc);
+    setMeta('keywords', keywords);
+    updateCanonical(url);
+
+    /* Open Graph */
+    setMeta('og:title', title, true);
+    setMeta('og:description', desc, true);
+    setMeta('og:url', url, true);
+    setMeta('og:type', 'article', true);
+
+    /* Twitter Card */
+    setMeta('twitter:title', title);
+    setMeta('twitter:description', desc);
+
+    /* JSON-LD HowTo structured data */
+    var existing = document.getElementById('seo-error-jsonld');
+    if (existing) existing.remove();
+
+    var stepsJson = err.fixes.map(function (fix, i) {
+        return '{"@type":"HowToStep","position":' + (i + 1) + ',"name":' + JSON.stringify(fix) + ',"text":' + JSON.stringify(fix) + '}';
+    }).join(',');
+
+    var causesText = err.causes.join('; ');
+    var cmdsText = err.cmds && err.cmds.length ? ' Diagnostic commands: ' + err.cmds.join(', ') + '.' : '';
+
+    var ld = document.createElement('script');
+    ld.type = 'application/ld+json';
+    ld.id = 'seo-error-jsonld';
+    ld.textContent = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'HowTo',
+        'name': 'How to fix ' + err.code + ': ' + err.name,
+        'description': err.desc + ' Common causes: ' + causesText + '.' + cmdsText,
+        'url': url,
+        'inLanguage': 'en',
+        'totalTime': 'PT15M',
+        'supply': err.cmds && err.cmds.length ? [{'@type': 'HowToSupply', 'name': 'Windows Command Prompt (Admin)'}] : [],
+        'step': err.fixes.map(function (fix, i) {
+            return {'@type': 'HowToStep', 'position': i + 1, 'name': fix, 'text': fix};
+        })
+    });
+    document.head.appendChild(ld);
+
+    /* Breadcrumb JSON-LD */
+    var existingBc = document.getElementById('seo-error-breadcrumb');
+    if (existingBc) existingBc.remove();
+    var catLabel = SUBCATS[err.subcat] ? SUBCATS[err.subcat].label : err.subcat;
+    var bc = document.createElement('script');
+    bc.type = 'application/ld+json';
+    bc.id = 'seo-error-breadcrumb';
+    bc.textContent = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+            {'@type': 'ListItem', 'position': 1, 'name': 'ErrorFixer', 'item': 'https://errorsfixer.com/'},
+            {'@type': 'ListItem', 'position': 2, 'name': catLabel, 'item': 'https://errorsfixer.com/?cat=' + err.subcat},
+            {'@type': 'ListItem', 'position': 3, 'name': err.code, 'item': url}
+        ]
+    });
+    document.head.appendChild(bc);
+}
+
+function resetSEOMeta() {
+    document.title = SEO_DEFAULTS.title;
+    setMeta('description', SEO_DEFAULTS.description);
+    setMeta('keywords', SEO_DEFAULTS.keywords);
+    updateCanonical(SEO_DEFAULTS.canonical);
+    setMeta('og:title', SEO_DEFAULTS.ogTitle, true);
+    setMeta('og:description', SEO_DEFAULTS.ogDesc, true);
+    setMeta('og:url', SEO_DEFAULTS.ogUrl, true);
+    setMeta('og:type', 'website', true);
+    setMeta('twitter:title', SEO_DEFAULTS.ogTitle);
+    setMeta('twitter:description', SEO_DEFAULTS.ogDesc);
+    var ld = document.getElementById('seo-error-jsonld');
+    if (ld) ld.remove();
+    var bc = document.getElementById('seo-error-breadcrumb');
+    if (bc) bc.remove();
+}
+
 function closeModal() {
     modalOverlay.classList.remove('open');
     document.body.style.overflow = '';
     if (window.location.pathname.includes('/error/') || window.location.search.includes('code=')) {
         window.history.pushState(null, '', '/');
     }
-    document.title = 'ErrorFixer - PC Error Database | BSOD, CPU, GPU, BIOS, Windows';
-    updateCanonical('https://errorsfixer.com/');
+    resetSEOMeta();
 }
 
 function switchSubcat(subcat, parent) {
@@ -542,7 +642,6 @@ function renderDropdown(query) {
     }
 
     if (!worker) {
-        // Sync fallback if no worker
         const q = query.toLowerCase();
         const scored = ERRORS
             .filter(e => e.code.toLowerCase().includes(q) || e.name.toLowerCase().includes(q) || e.desc.toLowerCase().includes(q))
@@ -667,12 +766,9 @@ globalSearch.addEventListener('input', function () {
         searchClear.style.display = searchQuery ? 'block' : 'none';
 
         if (searchQuery) {
-            // We need the filtered length for the UI message, so we call getFilteredAsync or equivalent
             getFilteredAsync().then(results => {
                 searchResultsInfo.style.display = 'block';
                 searchResultsInfo.textContent = 'Found ' + results.total + ' results for "' + searchQuery + '"';
-                // No need to call renderTable here because it was handled inside the timer or is redundant?
-                // Actually, renderTable() should be called to update the main view.
                 renderTable();
             });
         } else {
@@ -786,8 +882,7 @@ $('hamburger').addEventListener('click', function () {
     $('main-nav').classList.toggle('mobile-open');
 });
 
-// Close mobile menu when a link is clicked
-$('main-nav').addEventListener('click', function (e) {
+    $('main-nav').addEventListener('click', function (e) {
     if (e.target.classList.contains('nav-link')) {
         $('main-nav').classList.remove('mobile-open');
     }
