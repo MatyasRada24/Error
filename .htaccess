@@ -14,15 +14,45 @@
     Header always set X-XSS-Protection "1; mode=block"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), interest-cohort=()"
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none';"
+
+    # ---------------------------------------------------------------
+    # Content Security Policy – upraven pro Google AdSense
+    # ---------------------------------------------------------------
+    Header always set Content-Security-Policy "default-src 'self'; \
+script-src 'self' 'unsafe-inline' \
+  https://pagead2.googlesyndication.com \
+  https://adservice.google.com \
+  https://adservice.google.cz \
+  https://www.googletagservices.com \
+  https://partner.googleadservices.com \
+  https://cloud.umami.is; \
+style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
+font-src 'self' https://fonts.gstatic.com; \
+img-src 'self' data: https:; \
+frame-src \
+  https://googleads.g.doubleclick.net \
+  https://tpc.googlesyndication.com \
+  https://www.google.com; \
+connect-src 'self' \
+  https://pagead2.googlesyndication.com \
+  https://adservice.google.com \
+  https://adservice.google.cz \
+  https://cloud.umami.is \
+  https://formspree.io; \
+frame-ancestors 'none';"
+
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-    
+
     Header unset Server
     Header unset X-Powered-By
 
-    Header always set Cross-Origin-Opener-Policy "same-origin"
-    Header always set Cross-Origin-Embedder-Policy "require-corp"
-    Header always set Cross-Origin-Resource-Policy "same-origin"
+    # ---------------------------------------------------------------
+    # COEP/COOP/CORP – odstraněno pro kompatibilitu s AdSense
+    # (AdSense iframy vyžadují cross-origin přístup)
+    # ---------------------------------------------------------------
+    Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+    # Header always set Cross-Origin-Embedder-Policy "require-corp"  # ODSTRANĚNO – blokuje AdSense
+    Header always set Cross-Origin-Resource-Policy "cross-origin"
 
     <FilesMatch "\.(js|css|html|json|xml)$">
         Header append Vary Accept-Encoding
@@ -81,7 +111,7 @@
     ExpiresByType image/webp                "access plus 6 months"
     ExpiresByType image/png                 "access plus 6 months"
     ExpiresByType image/jpeg                "access plus 6 months"
-    ExpiresByType image/x-icon              "access plus 1 year"
+    ExpiresByType image/x-icon             "access plus 1 year"
     ExpiresByType image/svg+xml             "access plus 6 months"
     ExpiresByType font/woff2                "access plus 1 year"
     ExpiresByType application/xml           "access plus 1 day"
@@ -103,12 +133,16 @@ Options -Indexes
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
-    
-    # Redirect /guides/xxx.html to /guides/xxx
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /guides/([^.]+)\.html\ HTTP
-    RewriteRule ^guides/(.+)\.html$ /guides/$1 [R=301,L]
-    
-    
+
+    # Redundant/Old URLs to remove from search index (410 Gone)
+    Redirect 410 /zh
+    Redirect 410 /en
+    Redirect 410 /error/net-wifi/
+    Redirect 410 /error/gpu-color-output/
+    Redirect 410 /error/drv-audio/
+    Redirect 410 /error/app-direct-storage/
+    Redirect 410 /error/usbc-power-delivery/
+
     RewriteRule ^search/(.+)$ /?q=$1 [L,R=301,NE]
     RewriteRule ^error/([^/]+)/?$ /index.html [L,QSA]
     RewriteRule ^(cpu|gpu|ram|storage|mobo|psu|bios|network|windows|drivers|directx|runtime|sw-bios)/?$ /?cat=$1 [L,R=301]
